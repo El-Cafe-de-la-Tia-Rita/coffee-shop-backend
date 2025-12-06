@@ -53,8 +53,6 @@ export class BatchesService {
         batch: savedBatch,
         date: savedBatch.purchase_date,
         concept: `Batch ${savedBatch.code} purchase`,
-        quantity: 1,
-        unit: 'batch',
         provider: savedBatch.producer,
         responsible: currentUser.name,
         payment_method: PaymentMethod.OTHER,
