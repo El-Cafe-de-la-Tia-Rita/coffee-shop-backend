@@ -42,16 +42,17 @@ export class UsersService {
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-    await this.usersRepository.update(id, updateUserDto);
+    const updateResult = await this.usersRepository.update(id, updateUserDto);
+    if (updateResult.affected === 0) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
     return this.findOne(id);
   }
 
-// ...
-
   async remove(id: string): Promise<void> {
-
-    await this.usersRepository.delete(id);
-
+    const deleteResult = await this.usersRepository.delete(id);
+    if (deleteResult.affected === 0) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
   }
-
 }
