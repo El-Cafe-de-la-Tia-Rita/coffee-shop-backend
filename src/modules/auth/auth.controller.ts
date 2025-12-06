@@ -82,7 +82,7 @@ export class AuthController {
     return this.authService.register(createUserDto);
   }
 
-  @Get('profile')
+  @Get('me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get the profile of the currently logged in user' })
   @ApiResponse({ status: 200, description: 'The user profile', type: Object })
