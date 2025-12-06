@@ -4,4 +4,6 @@ export enum ExpenseCategory {
   SUPPLIES = 'SUPPLIES',
   SERVICES = 'SERVICES',
   OTHER = 'OTHER',
+  PURCHASE = 'PURCHASE',
+  PRODUCTION = 'PRODUCTION',
 }

@@ -28,6 +28,9 @@ export class ProductCatalog {
   @Column()
   package_type: string;
 
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 }) // Added base_price
+  base_price: number;
+
   @Column({ default: true })
   active: boolean;
 

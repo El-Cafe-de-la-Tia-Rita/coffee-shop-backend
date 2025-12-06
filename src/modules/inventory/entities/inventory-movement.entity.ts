@@ -9,13 +9,14 @@ import { Product } from '../../products/entities/product.entity';
 import { Batch } from '../../batches/entities/batch.entity';
 import { User } from '../../users/entities/user.entity';
 import { MovementType } from '../../../common/enums/movement-type.enum';
+import { InventoryMovementReason } from '../../../common/enums/inventory-movement-reason.enum';
 
 @Entity('inventory_movements')
 export class InventoryMovement {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Product, (p) => p.inventory_movements)
+  @ManyToOne(() => Product, (p) => p.inventory_movements, { nullable: true })
   product_stock: Product;
 
   @ManyToOne(() => Batch, (l) => l.inventory_movements, { nullable: true })
@@ -30,8 +31,8 @@ export class InventoryMovement {
   @Column()
   unit: string;
 
-  @Column({ type: 'text', nullable: true })
-  reason: string;
+  @Column({ type: 'enum', enum: InventoryMovementReason, nullable: true })
+  reason: InventoryMovementReason;
 
   @Column({ nullable: true })
   reference: string;

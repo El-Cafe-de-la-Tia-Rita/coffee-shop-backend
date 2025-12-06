@@ -5,6 +5,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
 import { Expense } from '../../expenses/entities/expense.entity';
@@ -60,6 +61,9 @@ export class Batch {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => MicroBatch, (m) => m.batch)
