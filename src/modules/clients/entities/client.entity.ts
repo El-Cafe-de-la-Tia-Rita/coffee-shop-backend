@@ -5,6 +5,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Order } from '../../orders/entities/order.entity';
 
@@ -16,16 +17,16 @@ export class Client {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   phone: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   district: string;
 
   @Column({ type: 'text', nullable: true })
@@ -48,6 +49,9 @@ export class Client {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => Order, (o) => o.client)

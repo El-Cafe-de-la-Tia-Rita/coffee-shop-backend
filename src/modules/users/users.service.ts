@@ -61,7 +61,7 @@ export class UsersService {
       }
     }
 
-    // Admin can update role and active status for any user
+    // Only Admin can update role and active status for any user
     if (isAdmin) {
       if (updateUserDto.role) {
         allowedUpdates.role = updateUserDto.role;
