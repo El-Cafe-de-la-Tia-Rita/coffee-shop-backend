@@ -6,6 +6,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Client } from '../../clients/entities/client.entity';
 import { OrderItem } from './order-item.entity';
@@ -75,6 +76,9 @@ export class Order {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => OrderItem, (i) => i.order)
