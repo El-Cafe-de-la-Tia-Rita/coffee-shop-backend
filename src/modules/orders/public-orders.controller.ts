@@ -42,6 +42,6 @@ export class PublicOrdersController {
   @ApiResponse({ status: 404, description: 'Product not found.' })
   createPublicOrder(@Body() createOrderDto: CreateOrderDto) {
     // For public orders, responsible user can be a generic system user or undefined
-    return this.ordersService.create(createOrderDto, undefined);
+    return this.ordersService.createPublicOrder(createOrderDto);
   }
 }
