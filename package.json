@@ -46,6 +46,6 @@
     "migration:generate": "pnpm typeorm migration:generate src/database/migrations/InitialMigration -d src/config/data-source.ts",
     "migration:run": "pnpm typeorm migration:run -d src/config/data-source.ts",
     "migration:revert": "pnpm typeorm migration:revert -d src/config/data-source.ts",
-    "start:prod": "npm run build && node ./node_modules/typeorm/cli.js migration:run -d dist/config/data-source.js && node -r tsconfig-paths/register dist/main.js"
+    "start:prod": "npm run build && node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d dist/config/data-source.js && node -r tsconfig-paths/register dist/main.js"
   }
 }
