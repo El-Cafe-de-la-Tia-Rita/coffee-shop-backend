@@ -10,8 +10,8 @@ import {
 import { Product } from '../../products/entities/product.entity';
 import { Batch } from '../../batches/entities/batch.entity';
 import { User } from '../../users/entities/user.entity';
-import { MovementType } from '../../../common/enums/movement-type.enum';
-import { InventoryMovementReason } from '../../../common/enums/inventory-movement-reason.enum';
+import { MovementType } from '@common/enums/movement-type.enum';
+import { InventoryMovementReason } from '@common/enums/inventory-movement-reason.enum';
 
 @Entity('inventory_movements')
 export class InventoryMovement {

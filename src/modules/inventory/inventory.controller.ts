@@ -4,9 +4,9 @@ import { InventoryService } from './inventory.service';
 import { FilterInventoryMovementDto } from './dto/filter-inventory-movement.dto';
 import { ResponseInventoryMovementDto } from './dto/response-inventory-movement.dto';
 import { InventorySummaryDto } from './dto/inventory-summary.dto';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../common/enums/user-role.enum';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '@common/decorators/roles.decorator';
+import { UserRole } from '@common/enums/user-role.enum';
+import { RolesGuard } from '@common/guards/roles.guard';
 
 @ApiTags('Inventory')
 @ApiBearerAuth()

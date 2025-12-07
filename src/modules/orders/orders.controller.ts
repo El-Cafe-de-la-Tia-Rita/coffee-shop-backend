@@ -6,15 +6,15 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { ResponseOrderDto } from './dto/response-order.dto';
 import { OrderStatsDto } from './dto/order-stats.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../common/enums/user-role.enum';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '@common/decorators/roles.decorator';
+import { UserRole } from '@common/enums/user-role.enum';
+import { RolesGuard } from '@common/guards/roles.guard';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { Public } from '@common/decorators/public.decorator';
 import { User } from '../users/entities/user.entity';
-import { OrderStatus } from '../../common/enums/order-status.enum';
-import { OrderOrigin } from '../../common/enums/order-origin.enum';
-import { PaymentMethod } from '../../common/enums/payment-method.enum';
+import { OrderStatus } from '@common/enums/order-status.enum';
+import { OrderOrigin } from '@common/enums/order-origin.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 @ApiTags('Orders')
 @ApiBearerAuth()

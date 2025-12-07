@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GrindType } from '../../../common/enums/grind-type.enum';
+import { GrindType } from '@common/enums/grind-type.enum';
 
 class TopProductDto {
   @ApiProperty({ description: 'ID of the product stock item' })

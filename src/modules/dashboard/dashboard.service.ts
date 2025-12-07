@@ -12,7 +12,7 @@ import { DashboardSalesMetricsDto } from './dto/dashboard-sales-metrics.dto';
 import { DashboardInventoryMetricsDto } from './dto/dashboard-inventory-metrics.dto';
 import { DashboardTopClientsDto } from './dto/dashboard-top-clients.dto';
 import { DashboardTopProductsDto } from './dto/dashboard-top-products.dto';
-import { OrderStatus } from '../../common/enums/order-status.enum';
+import { OrderStatus } from '@common/enums/order-status.enum';
 
 @Injectable()
 export class DashboardService {

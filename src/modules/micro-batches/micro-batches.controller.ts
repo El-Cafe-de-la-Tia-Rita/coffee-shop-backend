@@ -4,13 +4,13 @@ import { MicroBatchesService } from './micro-batches.service';
 import { CreateMicroBatchDto } from './dto/create-micro-batch.dto';
 import { UpdateMicroBatchDto } from './dto/update-micro-batch.dto';
 import { ResponseMicroBatchDto } from './dto/response-micro-batch.dto';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../common/enums/user-role.enum';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { User } from '../../modules/users/entities/user.entity';
-import { RoastType } from '../../common/enums/roast-type.enum';
-import { GrindType } from '../../common/enums/grind-type.enum';
+import { Roles } from '@common/decorators/roles.decorator';
+import { UserRole } from '@common/enums/user-role.enum';
+import { RolesGuard } from '@common/guards/roles.guard';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { User } from '@modules/users/entities/user.entity';
+import { RoastType } from '@common/enums/roast-type.enum';
+import { GrindType } from '@common/enums/grind-type.enum';
 
 @ApiTags('Micro Batches')
 @ApiBearerAuth()

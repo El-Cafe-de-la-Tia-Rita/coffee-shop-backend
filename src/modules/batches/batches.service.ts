@@ -5,15 +5,15 @@ import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { Batch } from './entities/batch.entity';
 import { FilterBatchDto } from './dto/filter-batch.dto';
-import { PaginationResult } from '../../common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { Expense } from '../expenses/entities/expense.entity';
-import { BatchStatus } from '../../common/enums/batch-status.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
-import { User } from '../../modules/users/entities/user.entity';
-import { ExpenseCategory } from '../../common/enums/expense-category.enum';
-import { MovementType } from '../../common/enums/movement-type.enum';
-import { PaymentMethod } from '../../common/enums/payment-method.enum';
-import { InventoryMovementReason } from '../../common/enums/inventory-movement-reason.enum';
+import { User } from '@modules/users/entities/user.entity';
+import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { MovementType } from '@common/enums/movement-type.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
+import { InventoryMovementReason } from '@common/enums/inventory-movement-reason.enum';
 
 @Injectable()
 export class BatchesService {

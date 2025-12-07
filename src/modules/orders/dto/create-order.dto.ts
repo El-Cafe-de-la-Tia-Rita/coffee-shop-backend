@@ -1,8 +1,8 @@
 import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum, ValidateNested, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { OrderOrigin } from '../../../common/enums/order-origin.enum';
-import { PaymentMethod } from '../../../common/enums/payment-method.enum';
+import { OrderOrigin } from '@common/enums/order-origin.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 import { CreateOrderItemDto } from './create-order-item.dto';
 
 export class CreateOrderDto {

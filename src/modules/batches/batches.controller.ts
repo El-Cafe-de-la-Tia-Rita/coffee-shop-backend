@@ -4,14 +4,14 @@ import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { UpdateBatchDto } from './dto/update-batch.dto';
 import { FilterBatchDto } from './dto/filter-batch.dto';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../common/enums/user-role.enum';
-import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '@common/decorators/roles.decorator';
+import { UserRole } from '@common/enums/user-role.enum';
+import { RolesGuard } from '@common/guards/roles.guard';
 import { ResponseBatchDto } from './dto/response-batch.dto';
 import { SummaryBatchDto } from './dto/summary-batch.dto';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
 import { User } from '../../modules/users/entities/user.entity';
-import { BatchStatus } from '../../common/enums/batch-status.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
 
 @ApiTags('Batches')
 @ApiBearerAuth()

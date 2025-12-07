@@ -1,9 +1,9 @@
 import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { PaginationDto } from '../../../common/dto/pagination.dto';
-import { ExpenseCategory } from '../../../common/enums/expense-category.enum';
-import { PaymentMethod } from '../../../common/enums/payment-method.enum';
+import { PaginationDto } from '@common/dto/pagination.dto';
+import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 export class FilterExpenseDto extends PaginationDto {
   @ApiPropertyOptional({ enum: ExpenseCategory })

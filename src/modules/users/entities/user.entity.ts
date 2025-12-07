@@ -10,7 +10,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { InventoryMovement } from '../../inventory/entities/inventory-movement.entity';
 import { Order } from '../../orders/entities/order.entity';
-import { UserRole } from '../../../common/enums/user-role.enum';
+import { UserRole } from '@common/enums/user-role.enum';
 
 @Entity('users')
 export class User {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OrderStatus } from '../../../common/enums/order-status.enum';
+import { OrderStatus } from '@common/enums/order-status.enum';
 
 class OrderStatItem {
   @ApiProperty()

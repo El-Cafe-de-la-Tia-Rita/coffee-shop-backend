@@ -6,7 +6,7 @@ import { UpdateClientDto } from './dto/update-client.dto';
 import { FilterClientDto } from './dto/filter-client.dto';
 import { ResponseClientDto } from './dto/response-client.dto';
 import { StatsClientDto } from './dto/stats-client.dto';
-import { Public } from '../../common/decorators/public.decorator';
+import { Public } from '@common/decorators/public.decorator';
 
 @ApiTags('Clients')
 @Controller('clients')
