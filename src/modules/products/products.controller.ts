@@ -5,9 +5,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ResponseProductDto } from './dto/response-product.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @ApiTags('Products')
 @ApiBearerAuth()

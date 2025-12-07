@@ -8,12 +8,12 @@ import { OrderItem } from './entities/order-item.entity';
 import { Client } from '../clients/entities/client.entity';
 import { Product } from '../products/entities/product.entity';
 import { User } from '../users/entities/user.entity';
-import { OrderStatus } from 'src/common/enums/order-status.enum';
+import { OrderStatus } from '../../common/enums/order-status.enum';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
-import { InventoryMovementReason } from 'src/common/enums/inventory-movement-reason.enum';
-import { MovementType } from 'src/common/enums/movement-type.enum';
+import { InventoryMovementReason } from '../../common/enums/inventory-movement-reason.enum';
+import { MovementType } from '../../common/enums/movement-type.enum';
 import { FilterOrderDto } from './dto/filter-order.dto';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationResult } from '../../common/interfaces/pagination-result.interface';
 import { OrderStatsDto } from './dto/order-stats.dto';
 
 @Injectable()

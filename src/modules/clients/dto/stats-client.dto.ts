@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
+import { PaymentMethod } from '../../../common/enums/payment-method.enum';
 
 export class StatsClientDto {
   @ApiProperty()

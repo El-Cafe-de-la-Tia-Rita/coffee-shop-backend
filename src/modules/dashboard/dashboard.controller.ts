@@ -7,9 +7,9 @@ import { DashboardSalesMetricsDto } from './dto/dashboard-sales-metrics.dto';
 import { DashboardInventoryMetricsDto } from './dto/dashboard-inventory-metrics.dto';
 import { DashboardTopClientsDto } from './dto/dashboard-top-clients.dto';
 import { DashboardTopProductsDto } from './dto/dashboard-top-products.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
+import { RolesGuard } from '../../common/guards/roles.guard';
 
 @ApiTags('Dashboard')
 @ApiBearerAuth()

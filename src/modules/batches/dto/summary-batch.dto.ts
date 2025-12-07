@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ResponseBatchDto } from './response-batch.dto';
-import { Expense } from 'src/modules/expenses/entities/expense.entity';
+import { Expense } from '../../../modules/expenses/entities/expense.entity';
 
 class BatchSummary {
   @ApiProperty()

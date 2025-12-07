@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsBoolean, IsEnum, IsInt, Min, Max } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { GrindType } from 'src/common/enums/grind-type.enum';
+import { GrindType } from '../../../common/enums/grind-type.enum';
 
 export class FilterProductDto {
   @ApiPropertyOptional({ default: 1, minimum: 1 })

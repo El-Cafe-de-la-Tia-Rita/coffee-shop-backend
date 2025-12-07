@@ -7,7 +7,7 @@ import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Client } from '../clients/entities/client.entity';
 import { Product } from '../products/entities/product.entity';
-import { User } from '../users/entities/user.entity'; // User entity is already imported and used
+import { User } from '../users/entities/user.entity';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
 
 @Module({

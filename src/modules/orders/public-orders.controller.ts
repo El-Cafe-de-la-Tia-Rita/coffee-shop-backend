@@ -3,9 +3,9 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ResponseOrderDto } from './dto/response-order.dto';
-import { Public } from 'src/common/decorators/public.decorator';
-import { OrderOrigin } from 'src/common/enums/order-origin.enum';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
+import { Public } from '../../common/decorators/public.decorator';
+import { OrderOrigin } from '../../common/enums/order-origin.enum';
+import { PaymentMethod } from '../../common/enums/payment-method.enum';
 
 @ApiTags('Public Form')
 @Controller('orders/public')

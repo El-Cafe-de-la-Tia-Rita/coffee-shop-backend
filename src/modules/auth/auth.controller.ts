@@ -1,11 +1,11 @@
 import { Controller, Post, UseGuards, Request, Get, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
+import { Public } from '../../common/decorators/public.decorator';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 
 @ApiTags('Auth')

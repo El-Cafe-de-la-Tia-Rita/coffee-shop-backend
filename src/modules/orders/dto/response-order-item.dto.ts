@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResponseProductDto } from 'src/modules/products/dto/response-product.dto';
+import { ResponseProductDto } from '../../../modules/products/dto/response-product.dto';
 
 export class ResponseOrderItemDto {
   @ApiProperty()
