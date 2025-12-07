@@ -3,37 +3,38 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copiar solo package.json y package-lock.json
+# Instalar pnpm
+RUN npm install -g pnpm
+
+# Copiar package.json y lockfile
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm install
+# Instalar dependencias completas (dev + prod) con pnpm
+RUN pnpm install
 
 # Copiar código fuente
 COPY . .
 
-# Compilar TypeScript para producción
-RUN npm run build:prod
+# Compilar TypeScript con pnpm
+RUN pnpm run build:prod
 
 # Etapa de producción
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Copiar solo package.json y lock file
+# Instalar pnpm
+RUN npm install -g pnpm
+
+# Copiar solo package.json y lockfile
 COPY package*.json ./
 
-# Instalar solo dependencias de producción
-RUN npm install --only=production
+# Instalar solo dependencias de producción con pnpm
+RUN pnpm install --prod
 
-# Copiar dist compilado desde builder
+# Copiar dist generado desde builder
 COPY --from=builder /app/dist ./dist
 
-# Registrar alias para Node
-RUN npm install module-alias
-
-# Exponer puerto
 EXPOSE 3000
 
-# Comando de arranque
 CMD ["node", "-r", "module-alias/register", "dist/main.js"]
