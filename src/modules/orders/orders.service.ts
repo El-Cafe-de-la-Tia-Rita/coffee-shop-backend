@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, Between, ILike } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
@@ -15,7 +15,6 @@ import { MovementType } from 'src/common/enums/movement-type.enum';
 import { FilterOrderDto } from './dto/filter-order.dto';
 import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
 import { OrderStatsDto } from './dto/order-stats.dto';
-import { UserRole } from 'src/common/enums/user-role.enum'; // Import UserRole
 
 @Injectable()
 export class OrdersService {
@@ -31,11 +30,24 @@ export class OrdersService {
     @InjectRepository(InventoryMovement)
     private inventoryMovementsRepository: Repository<InventoryMovement>,
     @InjectRepository(User)
-    private usersRepository: Repository<User>, // Inject UserRepository
+    private usersRepository: Repository<User>,
     private dataSource: DataSource,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, currentUser?: User): Promise<Order> { // currentUser is now optional
+  async createPublicOrder(createOrderDto: CreateOrderDto): Promise<Order> {
+    // Buscar usuario del sistema
+    const systemUser = await this.usersRepository.findOne({
+      where: { email: 'system@coffeeshop.com' }
+    });
+
+    if (!systemUser) {
+      throw new Error('System user not found. Please create a system user with email: system@coffeeshop.com');
+    }
+
+    return this.create(createOrderDto, systemUser);
+  }
+
+  async create(createOrderDto: CreateOrderDto, currentUser: User): Promise<Order> {
     const {
       clientId,
       clientName,
@@ -44,7 +56,11 @@ export class OrdersService {
       orderItems,
       discount,
       shipping,
-      ...orderData
+      delivery_date_estimated,
+      delivery_address,
+      origin,
+      payment_method,
+      notes,
     } = createOrderDto;
 
     return this.dataSource.transaction(async (manager) => {
@@ -56,33 +72,60 @@ export class OrdersService {
 
       // 1. Handle Client (find existing or create new)
       let client: Client;
+      
       if (clientId) {
+        // Caso 1: Se proporciona clientId (pedidos internos del staff)
         const foundClient = await clientRepository.findOneBy({ id: clientId });
         if (!foundClient) {
           throw new NotFoundException(`Client with ID "${clientId}" not found`);
         }
         client = foundClient;
       } else if (clientName && clientEmail && clientPhone) {
-        // Check if client with this email or phone already exists
-        const existingClient = await clientRepository.findOne({
+        // Caso 2: No se proporciona clientId (pedidos públicos)
+        // Buscar cliente existente por email O teléfono
+        let existingClient = await clientRepository.findOne({
           where: [{ email: clientEmail }, { phone: clientPhone }],
         });
 
         if (existingClient) {
-          // If a client exists but clientId wasn't provided, consider it a conflict
-          throw new ConflictException(`Client with email "${clientEmail}" or phone "${clientPhone}" already exists.`);
-        }
+          // Cliente encontrado - actualizar su información si es necesario
+          let needsUpdate = false;
+          
+          // Actualizar campos si son diferentes
+          if (existingClient.name !== clientName) {
+            existingClient.name = clientName;
+            needsUpdate = true;
+          }
+          if (existingClient.email !== clientEmail) {
+            existingClient.email = clientEmail;
+            needsUpdate = true;
+          }
+          if (existingClient.phone !== clientPhone) {
+            existingClient.phone = clientPhone;
+            needsUpdate = true;
+          }
+          if (existingClient.address !== delivery_address) {
+            existingClient.address = delivery_address;
+            needsUpdate = true;
+          }
 
-        // Create new client
-        const newClient = clientRepository.create({
-          name: clientName,
-          email: clientEmail,
-          phone: clientPhone,
-          address: orderData.delivery_address, // Use delivery address as client's address
-          district: 'N/A', // Default or derive from address
-          marketing_opt_in: false, // Default
-        });
-        client = await clientRepository.save(newClient);
+          if (needsUpdate) {
+            client = await clientRepository.save(existingClient);
+          } else {
+            client = existingClient;
+          }
+        } else {
+          // Cliente no encontrado - crear uno nuevo
+          const newClient = clientRepository.create({
+            name: clientName,
+            email: clientEmail,
+            phone: clientPhone,
+            address: delivery_address,
+            district: 'N/A',
+            marketing_opt_in: false,
+          });
+          client = await clientRepository.save(newClient);
+        }
       } else {
         throw new BadRequestException('Client ID or new client details (name, email, phone) must be provided.');
       }
@@ -90,7 +133,7 @@ export class OrdersService {
       // 2. Validate Stock and Calculate Totals
       let subtotal = 0;
       const createdOrderItems: OrderItem[] = [];
-      const productUpdates: Product[] = []; // To store products that need stock update
+      const productUpdates: Product[] = [];
 
       for (const itemDto of orderItems) {
         const product = await productRepository.findOneBy({ id: itemDto.productId });
@@ -107,18 +150,18 @@ export class OrdersService {
 
         // Create OrderItem
         const orderItem = orderItemRepository.create({
-          order: undefined, // Will be linked after order creation
+          order: undefined,
           product_stock: product,
           quantity: itemDto.quantity,
           unit_price: product.sale_price,
           subtotal: itemSubtotal,
-          sold_kg: (product.product_catalog.weight_grams / 1000) * itemDto.quantity, // Convert to kg
+          sold_kg: (product.product_catalog.weight_grams / 1000) * itemDto.quantity,
         });
         createdOrderItems.push(orderItem);
 
         // Prepare product for stock update
         product.stock_current -= itemDto.quantity;
-        product.stock_reserved += itemDto.quantity; // Reserve stock
+        product.stock_reserved += itemDto.quantity;
         productUpdates.push(product);
       }
 
@@ -129,23 +172,25 @@ export class OrdersService {
       }
 
       // 3. Create Order
-      const orderNumber = `ORD-${Date.now()}`; // Simple order number generation
+      const orderNumber = `ORD-${Date.now()}`;
       const newOrder = orderRepository.create({
-        delivery_date_estimated: orderData.delivery_date_estimated, // TypeORM lo convertirá automáticamente
-        delivery_address: orderData.delivery_address,
-        origin: orderData.origin,
-        payment_method: orderData.payment_method,
-        notes: orderData.notes,
         order_number: orderNumber,
         client,
         created_by: currentUser,
         status: OrderStatus.PENDING,
+        order_date: new Date(),
+        delivery_date_estimated,
+        delivery_date_real: null,
         subtotal,
         discount: discount ?? 0,
         shipping: shipping ?? 0,
         total,
-        order_date: new Date(),
+        payment_method,
         payment_confirmed: false,
+        payment_receipt_url: null,
+        notes: notes ?? null,
+        delivery_address,
+        origin,
       });
       const savedOrder = await orderRepository.save(newOrder);
 
@@ -160,7 +205,7 @@ export class OrdersService {
           movement_type: MovementType.OUTBOUND,
           product_stock: orderItem.product_stock,
           user: currentUser,
-          unit: orderItem.product_stock.product_catalog.package_type, // Unit from product catalog
+          unit: orderItem.product_stock.product_catalog.package_type,
           movement_date: new Date(),
           reason: InventoryMovementReason.SALE,
           reference: savedOrder.order_number,
@@ -223,15 +268,14 @@ export class OrdersService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto): Promise<Order> {
-    const order = await this.findOne(id); // Ensure order exists
+    const order = await this.findOne(id);
 
     // Only allow updating notes and delivery_address
     const allowedUpdates: Partial<Order> = {};
-    if (updateOrderDto.notes) allowedUpdates.notes = updateOrderDto.notes;
+    if (updateOrderDto.notes !== undefined) allowedUpdates.notes = updateOrderDto.notes;
     if (updateOrderDto.delivery_address) allowedUpdates.delivery_address = updateOrderDto.delivery_address;
     if (updateOrderDto.delivery_date_estimated) allowedUpdates.delivery_date_estimated = updateOrderDto.delivery_date_estimated;
     
-    // Prevent direct manipulation of totals, status, items via this update
     if (Object.keys(allowedUpdates).length === 0) {
       throw new BadRequestException('No updatable fields provided or you do not have permission to update these fields.');
     }
@@ -250,19 +294,17 @@ export class OrdersService {
   async updateStatus(id: string, newStatus: OrderStatus, currentUser: User): Promise<Order> {
     const order = await this.findOne(id);
     if (order.status === newStatus) {
-      return order; // No change needed
+      return order;
     }
 
     // Perform specific actions based on status change
     if (newStatus === OrderStatus.DELIVERED && order.status !== OrderStatus.DELIVERED) {
-      // Logic for delivery - confirm payment if not already
       if (!order.payment_confirmed) {
         order.payment_confirmed = true;
       }
       order.delivery_date_real = new Date().toISOString().split('T')[0];
     }
 
-    // Logic for other status changes (e.g., return inventory if cancelled) - handled by cancelOrder
     if (newStatus === OrderStatus.CANCELLED) {
       throw new BadRequestException('Use the /cancel endpoint to cancel an order to ensure proper stock restoration.');
     }
@@ -283,7 +325,7 @@ export class OrdersService {
   async cancelOrder(id: string, currentUser: User): Promise<Order> {
     const order = await this.findOne(id);
     if (order.status === OrderStatus.CANCELLED) {
-      return order; // Already cancelled
+      return order;
     }
 
     return this.dataSource.transaction(async (manager) => {
@@ -299,13 +341,13 @@ export class OrdersService {
         const product = await productRepository.findOneBy({ id: item.product_stock.id });
         if (product) {
           product.stock_current += item.quantity;
-          product.stock_reserved -= item.quantity; // Release reserved stock
+          product.stock_reserved -= item.quantity;
           await productRepository.save(product);
 
           // Create InventoryMovement for stock restoration
           const inventoryMovement = inventoryMovementRepository.create({
             quantity: item.quantity,
-            movement_type: MovementType.INBOUND, // Stock coming back in
+            movement_type: MovementType.INBOUND,
             product_stock: product,
             user: currentUser,
             unit: item.product_stock.product_catalog.package_type,
@@ -356,8 +398,6 @@ export class OrdersService {
   }
 
   async getStatistics(): Promise<OrderStatsDto> {
-    // This is a placeholder for actual statistics calculations
-    // For now, return basic counts. Detailed calculations would involve complex SQL queries.
     const totalOrders = await this.ordersRepository.count();
     const totalRevenueResult = await this.ordersRepository.sum('total');
     const totalRevenue = totalRevenueResult || 0;
@@ -374,8 +414,7 @@ export class OrdersService {
       return acc;
     }, {} as Record<OrderStatus, number>);
 
-
-    // Example: Orders by day (last 7 days)
+    // Orders by day (last 7 days)
     const ordersByDay = await this.ordersRepository
       .createQueryBuilder('order')
       .select("TO_CHAR(order.order_date, 'YYYY-MM-DD')", 'label')
@@ -386,7 +425,7 @@ export class OrdersService {
       .orderBy('label', 'ASC')
       .getRawMany();
 
-    // Example: Orders by product (top 5)
+    // Orders by product (top 5)
     const ordersByProduct = await this.orderItemsRepository
       .createQueryBuilder('orderItem')
       .leftJoinAndSelect('orderItem.product_stock', 'product_stock')

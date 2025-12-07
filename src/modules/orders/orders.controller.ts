@@ -23,40 +23,39 @@ import { PaymentMethod } from 'src/common/enums/payment-method.enum';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // Protected endpoint for admin/manager/staff to create orders
-  @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
-  @ApiOperation({ summary: 'Create a new order (staff/admin only)' })
-  @ApiBody({
-    type: CreateOrderDto,
-    examples: {
-      staffOrder: {
-        summary: 'Order for existing client',
-        value: {
-          clientId: 'uuid-of-existing-client',
-          delivery_date_estimated: '2025-12-10',
-          delivery_address: '123 Main St, Anytown',
-          origin: OrderOrigin.WEBSITE,
-          payment_method: PaymentMethod.CASH,
-          notes: 'Customer requested quick delivery.',
-          discount: 5.00,
-          shipping: 3.00,
-          orderItems: [
-            { productId: 'uuid-of-product-stock-1', quantity: 2 },
-            { productId: 'uuid-of-product-stock-2', quantity: 1 },
-          ],
-        },
+@Public()
+@Post('public')
+@HttpCode(HttpStatus.CREATED)
+@ApiOperation({ 
+  summary: 'Create a new order (public form)',
+  description: 'Creates an order from a public form. If a client with the provided email or phone exists, their information will be updated and the order will be linked to them. Otherwise, a new client will be created.'
+})
+@ApiBody({
+  type: CreateOrderDto,
+  examples: {
+    publicOrder: {
+      summary: 'Order for new or existing client via public form',
+      value: {
+        clientName: 'New Client',
+        clientEmail: 'new.client@example.com',
+        clientPhone: '+1234567890',
+        delivery_date_estimated: '2025-12-11',
+        delivery_address: '456 Oak Ave, Otherville',
+        origin: OrderOrigin.WEBSITE,
+        payment_method: PaymentMethod.PLIN,
+        orderItems: [
+          { productId: 'uuid-of-product-stock-3', quantity: 1 },
+        ],
       },
     },
-  })
-  @ApiResponse({ status: 201, description: 'Order created successfully.', type: ResponseOrderDto })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 404, description: 'Client or Product not found.' })
-  createOrder(@Body() createOrderDto: CreateOrderDto, @CurrentUser() currentUser: User) {
-    return this.ordersService.create(createOrderDto, currentUser);
-  }
+  },
+})
+@ApiResponse({ status: 201, description: 'Order created successfully. Client information updated if already exists, or new client created.' })
+@ApiResponse({ status: 400, description: 'Bad Request.' })
+@ApiResponse({ status: 404, description: 'Product not found.' })
+createPublicOrder(@Body() createOrderDto: CreateOrderDto) {
+  return this.ordersService.createPublicOrder(createOrderDto);
+}
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
