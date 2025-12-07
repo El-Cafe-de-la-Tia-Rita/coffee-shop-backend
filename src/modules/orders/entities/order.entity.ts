@@ -56,7 +56,8 @@ export class Order {
   @Column({ default: false })
   payment_confirmed: boolean;
 
-  @Column({ nullable: true })
+
+  @Column({ nullable: true, type: 'text' })
   payment_receipt_url: string | null;
 
   @Column({ type: 'text', nullable: true })

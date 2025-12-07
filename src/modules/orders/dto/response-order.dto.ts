@@ -45,7 +45,7 @@ export class ResponseOrderDto {
   @ApiProperty()
   payment_confirmed: boolean;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   payment_receipt_url?: string;
 
   @ApiProperty({ nullable: true })
