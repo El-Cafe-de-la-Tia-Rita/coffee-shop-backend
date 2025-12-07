@@ -13,6 +13,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
 import jwtConfig from './config/jwt.config';
@@ -52,6 +53,7 @@ const envFile = process.env.NODE_ENV === 'production'
     ProductsModule,
     InventoryModule,
     OrdersModule,
+    DashboardModule,
     AuthModule,
   ],
   providers: [

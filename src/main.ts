@@ -31,14 +31,14 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('Auth')
-    .addTag('Users')
-    .addTag('Clients')
     .addTag('Batches')
-    .addTag('Micro Batches')
+    .addTag('Clients')
+    .addTag('Dashboard')
     .addTag('Expenses')
-    .addTag('Products')
     .addTag('Inventory')
+    .addTag('Micro Batches')
     .addTag('Orders')
+    .addTag('Products')
     .addTag('Public Form')
     .build();
   
