@@ -6,10 +6,10 @@ import { ProductCatalog } from './entities/product-catalog.entity';
 import { ProductCatalogService } from './product-catalog.service';
 import { ProductCatalogController } from './product-catalog.controller';
 import { Product } from './entities/product.entity';
-import { MicroBatch } from '../micro-batches/entities/micro-batch.entity'; // Import MicroBatch entity
+import { MicroBatch } from '../micro-batches/entities/micro-batch.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductCatalog, Product, MicroBatch])], // Add MicroBatch
+  imports: [TypeOrmModule.forFeature([ProductCatalog, Product, MicroBatch])],
   controllers: [ProductsController, ProductCatalogController],
   providers: [ProductsService, ProductCatalogService],
 })

@@ -5,9 +5,9 @@ import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { Expense } from './entities/expense.entity';
 import { FilterExpenseDto } from './dto/filter-expense.dto';
-import { PaginationResult } from '../../common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { Batch } from '../batches/entities/batch.entity';
-import { User } from '../../modules/users/entities/user.entity';
+import { User } from '@modules/users/entities/user.entity';
 
 @Injectable()
 export class ExpensesService {

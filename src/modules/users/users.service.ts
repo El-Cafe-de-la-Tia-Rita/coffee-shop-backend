@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { UserRole } from '../../common/enums/user-role.enum';
+import { UserRole } from '@common/enums/user-role.enum';
 
 
 @Injectable()

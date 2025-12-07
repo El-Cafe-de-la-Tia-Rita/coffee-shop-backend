@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RoastType } from '../../../common/enums/roast-type.enum';
-import { ResponseBatchDto } from '../../../modules/batches/dto/response-batch.dto';
+import { RoastType } from '@common/enums/roast-type.enum';
+import { ResponseBatchDto } from '@modules/batches/dto/response-batch.dto';
 
 export class ResponseMicroBatchDto {
   @ApiProperty()

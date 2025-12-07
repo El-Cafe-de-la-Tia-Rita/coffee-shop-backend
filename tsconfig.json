@@ -15,7 +15,8 @@
     "baseUrl": "./",
     "rootDir": "./src",
     "paths": {
-      "src/*": ["src/*"] 
+      "@common/*": ["src/common/*"],
+      "@modules/*": ["src/modules/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

@@ -10,7 +10,7 @@ import {
 import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
 import { Expense } from '../../expenses/entities/expense.entity';
 import { InventoryMovement } from '../../inventory/entities/inventory-movement.entity';
-import { BatchStatus } from '../../../common/enums/batch-status.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
 
 @Entity('batch')
 export class Batch {

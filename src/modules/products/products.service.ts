@@ -5,7 +5,7 @@ import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { ProductCatalog } from './entities/product-catalog.entity';
 import { MicroBatch } from '../micro-batches/entities/micro-batch.entity';
 

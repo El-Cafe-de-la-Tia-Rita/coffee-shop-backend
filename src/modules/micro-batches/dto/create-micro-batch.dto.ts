@@ -1,5 +1,5 @@
 import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum, ValidateNested, IsArray } from 'class-validator';
-import { RoastType } from '../../../common/enums/roast-type.enum';
+import { RoastType } from '@common/enums/roast-type.enum';
 import { Type } from 'class-transformer';
 import { ProductOutputDto } from './product-output.dto';
 

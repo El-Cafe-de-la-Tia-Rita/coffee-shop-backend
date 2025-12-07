@@ -12,7 +12,7 @@ import { ProductCatalog } from './product-catalog.entity';
 import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
 import { OrderItem } from '../../orders/entities/order-item.entity';
 import { InventoryMovement } from '../../inventory/entities/inventory-movement.entity';
-import { GrindType } from '../../../common/enums/grind-type.enum';
+import { GrindType } from '@common/enums/grind-type.enum';
 
 @Entity('product_stock')
 export class Product {
