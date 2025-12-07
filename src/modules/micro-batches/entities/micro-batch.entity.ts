@@ -6,6 +6,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
 import { Product } from '../../products/entities/product.entity';
@@ -46,18 +47,6 @@ export class MicroBatch {
   @Column()
   roast_responsible: string;
 
-  @Column()
-  bags_obtained_250g: number;
-
-  @Column()
-  samples_obtained_100g: number;
-
-  @Column({ type: 'decimal', precision: 8, scale: 2 })
-  leftover_grams: number;
-
-  @Column()
-  extra_bag: boolean;
-
   @Column({ type: 'text', nullable: true })
   observations: string;
 
@@ -66,6 +55,9 @@ export class MicroBatch {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => Product, (p) => p.microbatch)

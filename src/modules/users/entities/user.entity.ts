@@ -5,7 +5,9 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { InventoryMovement } from '../../inventory/entities/inventory-movement.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { UserRole } from '../../../common/enums/user-role.enum';
@@ -18,6 +20,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
@@ -35,6 +38,9 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => Order, (o) => o.created_by)

@@ -5,6 +5,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
 
@@ -28,6 +29,9 @@ export class ProductCatalog {
   @Column()
   package_type: string;
 
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 }) // Added base_price
+  base_price: number;
+
   @Column({ default: true })
   active: boolean;
 
@@ -36,6 +40,9 @@ export class ProductCatalog {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => Product, (p) => p.product_catalog)

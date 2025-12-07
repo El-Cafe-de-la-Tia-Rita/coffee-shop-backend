@@ -5,6 +5,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
 import { ExpenseCategory } from '../../../common/enums/expense-category.enum';
@@ -15,8 +16,8 @@ export class Expense {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Batch, (l) => l.expenses)
-  batch: Batch;
+  @ManyToOne(() => Batch, (l) => l.expenses, { nullable: true })
+  batch?: Batch;
 
   @Column({ type: 'date' })
   date: string;
@@ -29,12 +30,6 @@ export class Expense {
 
   @Column({ type: 'text', nullable: true })
   description: string;
-
-  @Column({ type: 'decimal', precision: 12, scale: 2 })
-  quantity: number;
-
-  @Column()
-  unit: string;
 
   @Column({ type: 'decimal', precision: 12, scale: 2 })
   amount: number;
@@ -59,4 +54,7 @@ export class Expense {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }
