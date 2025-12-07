@@ -1,5 +1,7 @@
-import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum, ValidateNested, IsArray } from 'class-validator';
 import { RoastType } from '../../../common/enums/roast-type.enum';
+import { Type } from 'class-transformer';
+import { ProductOutputDto } from './product-output.dto';
 
 export class CreateMicroBatchDto {
   @IsString()
@@ -22,10 +24,6 @@ export class CreateMicroBatchDto {
   @Min(0)
   green_kg_used: number;
 
-  @IsNumber()
-  @Min(0)
-  roasted_kg_obtained: number;
-
   @IsEnum(RoastType)
   @IsNotEmpty()
   roast_type: RoastType;
@@ -33,21 +31,6 @@ export class CreateMicroBatchDto {
   @IsString()
   @IsNotEmpty()
   roast_responsible: string;
-
-  @IsNumber()
-  @Min(0)
-  bags_obtained_250g: number;
-
-  @IsNumber()
-  @Min(0)
-  samples_obtained_100g: number;
-
-  @IsNumber()
-  @Min(0)
-  leftover_grams: number;
-
-  @IsBoolean()
-  extra_bag: boolean;
 
   @IsString()
   @IsOptional()
@@ -57,5 +40,10 @@ export class CreateMicroBatchDto {
   @IsOptional()
   @Min(0)
   production_cost?: number; // For associated expense
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductOutputDto)
+  productOutputs: ProductOutputDto[];
 }
 

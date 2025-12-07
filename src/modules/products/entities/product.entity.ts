@@ -6,6 +6,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { ProductCatalog } from './product-catalog.entity';
 import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
@@ -53,6 +54,9 @@ export class Product {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => OrderItem, (i) => i.product_stock)

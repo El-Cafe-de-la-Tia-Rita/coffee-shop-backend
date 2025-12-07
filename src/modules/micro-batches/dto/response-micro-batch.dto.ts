@@ -22,7 +22,7 @@ export class ResponseMicroBatchDto {
   green_kg_used: number;
 
   @ApiProperty()
-  roasted_kg_obtained: number;
+  total_roasted_kg_obtained: number;
 
   @ApiProperty()
   loss_kg: number;
@@ -37,18 +37,6 @@ export class ResponseMicroBatchDto {
   roast_responsible: string;
 
   @ApiProperty()
-  bags_obtained_250g: number;
-
-  @ApiProperty()
-  samples_obtained_100g: number;
-
-  @ApiProperty()
-  leftover_grams: number;
-
-  @ApiProperty()
-  extra_bag: boolean;
-
-  @ApiProperty()
   observations: string;
 
   @ApiProperty()
@@ -56,4 +44,7 @@ export class ResponseMicroBatchDto {
 
   @ApiProperty()
   updated_at: Date;
+
+  @ApiProperty({ nullable: true })
+  deleted_at: Date;
 }

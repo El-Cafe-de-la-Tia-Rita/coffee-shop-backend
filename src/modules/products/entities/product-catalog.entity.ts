@@ -5,6 +5,7 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Product } from './product.entity';
 
@@ -39,6 +40,9 @@ export class ProductCatalog {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 
   /** Relations */
   @OneToMany(() => Product, (p) => p.product_catalog)

@@ -47,18 +47,6 @@ export class MicroBatch {
   @Column()
   roast_responsible: string;
 
-  @Column()
-  bags_obtained_250g: number;
-
-  @Column()
-  samples_obtained_100g: number;
-
-  @Column({ type: 'decimal', precision: 8, scale: 2 })
-  leftover_grams: number;
-
-  @Column()
-  extra_bag: boolean;
-
   @Column({ type: 'text', nullable: true })
   observations: string;
 

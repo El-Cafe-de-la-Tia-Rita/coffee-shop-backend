@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
+  UpdateDateColumn, // Add UpdateDateColumn for deleted_at
+  DeleteDateColumn,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { Batch } from '../../batches/entities/batch.entity';
@@ -45,4 +47,10 @@ export class InventoryMovement {
 
   @CreateDateColumn()
   created_at: Date;
+
+  @UpdateDateColumn() // Add UpdateDateColumn here
+  updated_at: Date;
+
+  @DeleteDateColumn()
+  deleted_at: Date;
 }
