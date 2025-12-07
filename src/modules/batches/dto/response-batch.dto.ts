@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BatchStatus } from 'src/common/enums/batch-status.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
 
 export class ResponseBatchDto {
   @ApiProperty()

@@ -5,7 +5,7 @@ import { ProductCatalog } from './entities/product-catalog.entity';
 import { CreateProductCatalogDto } from './dto/create-product-catalog.dto';
 import { UpdateProductCatalogDto } from './dto/update-product-catalog.dto';
 import { FilterProductCatalogDto } from './dto/filter-product-catalog.dto';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 
 @Injectable()
 export class ProductCatalogService {

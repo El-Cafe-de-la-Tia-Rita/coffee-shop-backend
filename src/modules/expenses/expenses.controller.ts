@@ -4,12 +4,12 @@ import { ExpensesService } from './expenses.service';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { FilterExpenseDto } from './dto/filter-expense.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from '@common/decorators/roles.decorator';
+import { UserRole } from '@common/enums/user-role.enum';
+import { RolesGuard } from '@common/guards/roles.guard';
 import { ResponseExpenseDto } from './dto/response-expense.dto';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from 'src/modules/users/entities/user.entity';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { User } from '@modules/users/entities/user.entity';
 
 @ApiTags('Expenses')
 @ApiBearerAuth()

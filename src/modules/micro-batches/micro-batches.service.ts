@@ -9,13 +9,12 @@ import { Expense } from '../expenses/entities/expense.entity';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
 import { Product } from '../products/entities/product.entity';
 import { ProductCatalog } from '../products/entities/product-catalog.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import { ExpenseCategory } from 'src/common/enums/expense-category.enum';
-import { MovementType } from 'src/common/enums/movement-type.enum';
-import { BatchStatus } from 'src/common/enums/batch-status.enum';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
-import { GrindType } from 'src/common/enums/grind-type.enum';
-import { InventoryMovementReason } from 'src/common/enums/inventory-movement-reason.enum';
+import { User } from '@modules/users/entities/user.entity';
+import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { MovementType } from '@common/enums/movement-type.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
+import { InventoryMovementReason } from '@common/enums/inventory-movement-reason.enum';
 
 
 @Injectable()

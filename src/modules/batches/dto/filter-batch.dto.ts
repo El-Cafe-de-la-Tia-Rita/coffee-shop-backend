@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsEnum, IsInt, Min, Max } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { BatchStatus } from 'src/common/enums/batch-status.enum';
+import { BatchStatus } from '@common/enums/batch-status.enum';
 
 export class FilterBatchDto {
   @ApiPropertyOptional({ default: 1, minimum: 1 })

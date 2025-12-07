@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { GrindType } from 'src/common/enums/grind-type.enum';
-import { ResponseMicroBatchDto } from 'src/modules/micro-batches/dto/response-micro-batch.dto';
+import { GrindType } from '@common/enums/grind-type.enum';
+import { ResponseMicroBatchDto } from '@modules/micro-batches/dto/response-micro-batch.dto';
 import { ResponseProductCatalogDto } from './response-product-catalog.dto';
 
 export class ResponseProductDto {

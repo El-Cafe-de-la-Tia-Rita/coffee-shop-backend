@@ -11,9 +11,9 @@ import {
 import { Client } from '../../clients/entities/client.entity';
 import { OrderItem } from './order-item.entity';
 import { User } from '../../users/entities/user.entity';
-import { OrderStatus } from '../../../common/enums/order-status.enum';
-import { PaymentMethod } from '../../../common/enums/payment-method.enum';
-import { OrderOrigin } from '../../../common/enums/order-origin.enum';
+import { OrderStatus } from '@common/enums/order-status.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
+import { OrderOrigin } from '@common/enums/order-origin.enum';
 
 @Entity('orders')
 export class Order {
@@ -56,7 +56,8 @@ export class Order {
   @Column({ default: false })
   payment_confirmed: boolean;
 
-  @Column({ nullable: true })
+
+  @Column({ nullable: true, type: 'text' })
   payment_receipt_url: string | null;
 
   @Column({ type: 'text', nullable: true })

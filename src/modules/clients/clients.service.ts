@@ -5,11 +5,11 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
 import { FilterClientDto } from './dto/filter-client.dto';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { Order } from '../orders/entities/order.entity';
-import { OrderStatus } from 'src/common/enums/order-status.enum';
+import { OrderStatus } from '@common/enums/order-status.enum';
 import { StatsClientDto } from './dto/stats-client.dto';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 @Injectable()
 export class ClientsService {

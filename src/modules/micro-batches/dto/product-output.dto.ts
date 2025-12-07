@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, Min, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { GrindType } from 'src/common/enums/grind-type.enum';
+import { GrindType } from '@common/enums/grind-type.enum';
 
 export class ProductOutputDto {
   @ApiProperty()

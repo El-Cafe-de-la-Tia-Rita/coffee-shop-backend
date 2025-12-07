@@ -13,6 +13,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "dotenv": "^17.2.3",
+    "module-alias": "^2.2.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
@@ -21,27 +22,25 @@
     "pdfmake": "^0.2.20",
     "pg": "^8.16.3",
     "rxjs": "^7.8.2",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
-    "@types/dotenv": "^8.2.3",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^24.10.1",
-    "@types/passport-jwt": "^4.0.1",
-    "@types/passport-local": "^1.0.38",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "tslib": "^2.8.1",
-    "typeorm": "^0.3.28",
     "typeorm-ts-node-commonjs": "^0.3.20",
     "typescript": "^5.9.3"
   },
+  "_moduleAliases": {
+    "@common": "dist/common",
+    "@modules": "dist/modules"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:prod": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
-    "typeorm": "ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./node_modules/typeorm/cli.js",
+    "start:prod": "node -r module-alias/register dist/main.js",
+    "typeorm": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./node_modules/typeorm/cli.js",
     "migration:generate": "pnpm typeorm migration:generate src/database/migrations/InitialMigration -d src/config/data-source.ts",
     "migration:run": "pnpm typeorm migration:run -d src/config/data-source.ts",
     "migration:revert": "pnpm typeorm migration:revert -d src/config/data-source.ts"

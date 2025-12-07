@@ -1,10 +1,10 @@
 import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsInt, Min, Max } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { OrderStatus } from 'src/common/enums/order-status.enum';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
-import { OrderOrigin } from 'src/common/enums/order-origin.enum';
+import { PaginationDto } from '@common/dto/pagination.dto';
+import { OrderStatus } from '@common/enums/order-status.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
+import { OrderOrigin } from '@common/enums/order-origin.enum';
 
 export class FilterOrderDto extends PaginationDto {
   @ApiPropertyOptional()

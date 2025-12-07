@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
 import { Product } from '../../products/entities/product.entity';
-import { RoastType } from '../../../common/enums/roast-type.enum';
+import { RoastType } from '@common/enums/roast-type.enum';
 
 @Entity('microbatches')
 export class MicroBatch {

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MovementType } from 'src/common/enums/movement-type.enum';
-import { InventoryMovementReason } from 'src/common/enums/inventory-movement-reason.enum';
-import { ResponseProductDto } from 'src/modules/products/dto/response-product.dto';
-import { ResponseBatchDto } from 'src/modules/batches/dto/response-batch.dto';
+import { MovementType } from '@common/enums/movement-type.enum';
+import { InventoryMovementReason } from '@common/enums/inventory-movement-reason.enum';
+import { ResponseProductDto } from '@modules/products/dto/response-product.dto';
+import { ResponseBatchDto } from '@modules/batches/dto/response-batch.dto';
 
 export class ResponseInventoryMovementDto {
   @ApiProperty()

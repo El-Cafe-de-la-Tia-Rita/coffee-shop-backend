@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResponseClientDto } from 'src/modules/clients/dto/response-client.dto';
-import { OrderStatus } from 'src/common/enums/order-status.enum';
-import { PaymentMethod } from 'src/common/enums/payment-method.enum';
-import { OrderOrigin } from 'src/common/enums/order-origin.enum';
+import { ResponseClientDto } from '@modules/clients/dto/response-client.dto';
+import { OrderStatus } from '@common/enums/order-status.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
+import { OrderOrigin } from '@common/enums/order-origin.enum';
 import { ResponseOrderItemDto } from './response-order-item.dto';
 
 export class ResponseOrderDto {
@@ -45,7 +45,7 @@ export class ResponseOrderDto {
   @ApiProperty()
   payment_confirmed: boolean;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: 'string', nullable: true })
   payment_receipt_url?: string;
 
   @ApiProperty({ nullable: true })

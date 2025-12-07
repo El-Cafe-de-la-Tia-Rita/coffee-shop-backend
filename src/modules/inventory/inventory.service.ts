@@ -3,11 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { InventoryMovement } from './entities/inventory-movement.entity';
 import { FilterInventoryMovementDto } from './dto/filter-inventory-movement.dto';
-import { PaginationResult } from 'src/common/interfaces/pagination-result.interface';
+import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { Product } from '../products/entities/product.entity';
 import { ProductCatalog } from '../products/entities/product-catalog.entity';
 import { InventorySummaryDto, InventorySummaryItemDto } from './dto/inventory-summary.dto';
-import { MovementType } from 'src/common/enums/movement-type.enum';
 
 @Injectable()
 export class InventoryService {

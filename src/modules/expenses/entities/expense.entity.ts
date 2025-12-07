@@ -8,8 +8,8 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
-import { ExpenseCategory } from '../../../common/enums/expense-category.enum';
-import { PaymentMethod } from '../../../common/enums/payment-method.enum';
+import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 @Entity('expenses')
 export class Expense {
