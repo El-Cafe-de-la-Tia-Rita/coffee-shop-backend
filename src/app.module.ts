@@ -18,30 +18,27 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { TypeOrmExceptionFilter } from './common/filters/typeorm-exception.filter';
 import jwtConfig from './config/jwt.config';
 
-const envFile = process.env.NODE_ENV === 'production' 
-  ? 'env/.env.prod' 
-  : 'env/.env.dev';
+const isProduction = process.env.NODE_ENV === 'production';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: join(__dirname, '..', envFile),
+      // Solo cargar archivo .env en desarrollo
+      envFilePath: !isProduction ? join(__dirname, '../env/.env.dev') : undefined,
       load: [jwtConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const isProduction = process.env.NODE_ENV === 'production';
-        
+      useFactory: () => {
         // En producción, usar DATABASE_URL de Render
         if (isProduction && process.env.DATABASE_URL) {
           return {
             type: 'postgres' as const,
             url: process.env.DATABASE_URL,
-            entities: [__dirname + '/modules/**/*.entity.js', __dirname + '/common/entities/**/*.entity.js'],
-            migrations: [__dirname + '/database/migrations/*.js'],
+            entities: [join(__dirname, '/modules/**/*.entity.js'), join(__dirname, '/common/entities/**/*.entity.js')],
+            migrations: [join(__dirname, '/database/migrations/*.js')],
             synchronize: false,
             logging: false,
             ssl: {
@@ -50,16 +47,16 @@ const envFile = process.env.NODE_ENV === 'production'
           };
         }
         
-        // En desarrollo, usar variables individuales
+        // En desarrollo, usar variables individuales del .env.dev
         return {
           type: 'postgres' as const,
-          host: configService.get<string>('DB_HOST'),
-          port: configService.get<number>('DB_PORT'),
-          username: configService.get<string>('DB_USER'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_NAME'),
-          entities: [__dirname + '/modules/**/*.entity{.ts,.js}', __dirname + '/common/entities/**/*.entity{.ts,.js}'],
-          migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
+          host: process.env.DB_HOST || 'localhost',
+          port: parseInt(process.env.DB_PORT || '5432', 10),
+          username: process.env.DB_USER || 'postgres',
+          password: process.env.DB_PASSWORD || 'password',
+          database: process.env.DB_NAME || 'coffee_shop',
+          entities: [join(__dirname, '/modules/**/*.entity{.ts,.js}'), join(__dirname, '/common/entities/**/*.entity{.ts,.js}')],
+          migrations: [join(__dirname, '/database/migrations/*{.ts,.js}')],
           synchronize: false,
           logging: true,
           ssl: false,

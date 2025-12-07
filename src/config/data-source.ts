@@ -1,42 +1,46 @@
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
-import { DataSource, DataSourceOptions } from 'typeorm'; // Importar DataSourceOptions
 import { join } from 'path';
 
-// Determina qué archivo .env cargar (mantener lógica si es necesario)
-const envFile = process.env.NODE_ENV === 'production' 
-  ? 'env/.env.prod' 
-  : 'env/.env.dev';
+const isProduction = process.env.NODE_ENV === 'production';
 
-config({ path: join(__dirname, '../..', envFile) });
+// Solo cargar .env.dev en desarrollo
+if (!isProduction) {
+  config({ path: join(__dirname, '../../env/.env.dev') });
+}
 
 // Definición de las opciones de conexión
 const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   
-  // PRIORIDAD: Usa DATABASE_URL (Render) si existe, si no, usa variables locales
-  url: process.env.DATABASE_URL, 
+  // En producción, usa DATABASE_URL de Render
+  ...(isProduction && process.env.DATABASE_URL
+    ? { url: process.env.DATABASE_URL }
+    : {
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5432', 10),
+        username: process.env.DB_USER || 'postgres',
+        password: process.env.DB_PASSWORD || 'password',
+        database: process.env.DB_NAME || 'coffee_shop',
+      }
+  ),
   
-  // Configuración local de respaldo
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'Delvi0621',
-  database: process.env.DB_NAME || 'coffee_shop',
-  
-  // Configuración de SSL para producción (requerido por Render)
-  ssl: process.env.NODE_ENV === 'production' 
-    ? { rejectUnauthorized: false } // Desactiva la verificación del certificado para la conexión
+  // SSL para producción (requerido por Render)
+  ssl: isProduction 
+    ? { rejectUnauthorized: false }
     : false,
 
-  // Rutas de entidades y migraciones (Asegúrate de que coincidan con la compilación)
-  // **Importante: TypeORM en tiempo de ejecución (JS) debe buscar .js**
-  entities: [
-    'dist/modules/**/*.entity.js', // Cambiado a .js
-    'dist/common/entities/**/*.entity.js' // Cambiado a .js
-  ],
-  migrations: ['dist/database/migrations/*.js'], // Cambiado a .js
+  // Rutas de entidades y migraciones
+  entities: isProduction 
+    ? [join(__dirname, '../modules/**/*.entity.js'), join(__dirname, '../common/entities/**/*.entity.js')]
+    : [join(__dirname, '../modules/**/*.entity.ts'), join(__dirname, '../common/entities/**/*.entity.ts')],
+  
+  migrations: isProduction
+    ? [join(__dirname, '../database/migrations/*.js')]
+    : [join(__dirname, '../database/migrations/*.ts')],
+  
   synchronize: false,
-  logging: true,
+  logging: !isProduction,
 };
 
 export const AppDataSource = new DataSource(dataSourceOptions);
