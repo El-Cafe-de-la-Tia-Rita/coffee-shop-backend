@@ -30,10 +30,10 @@ export class Order {
   order_date: Date;
 
   @Column({ type: 'date', nullable: true })
-  delivery_date_estimated: string;
+  delivery_date_estimated: string | null;
 
   @Column({ type: 'date', nullable: true })
-  delivery_date_real: string;
+  delivery_date_real: string | null;
 
   @Column({ type: 'enum', enum: OrderStatus })
   status: OrderStatus;
@@ -57,10 +57,10 @@ export class Order {
   payment_confirmed: boolean;
 
   @Column({ nullable: true })
-  payment_receipt_url: string;
+  payment_receipt_url: string | null;
 
   @Column({ type: 'text', nullable: true })
-  notes: string;
+  notes: string | null;
 
   @Column({ type: 'text' })
   delivery_address: string;
