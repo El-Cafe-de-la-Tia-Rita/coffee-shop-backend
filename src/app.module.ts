@@ -32,18 +32,39 @@ const envFile = process.env.NODE_ENV === 'production'
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USER'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        entities: [__dirname + '/modules/**/*.entity{.ts,.js}', __dirname + '/common/entities/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
-        synchronize: false,
-        logging: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isProduction = process.env.NODE_ENV === 'production';
+        
+        // En producción, usar DATABASE_URL de Render
+        if (isProduction && process.env.DATABASE_URL) {
+          return {
+            type: 'postgres' as const,
+            url: process.env.DATABASE_URL,
+            entities: [__dirname + '/modules/**/*.entity.js', __dirname + '/common/entities/**/*.entity.js'],
+            migrations: [__dirname + '/database/migrations/*.js'],
+            synchronize: false,
+            logging: false,
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          };
+        }
+        
+        // En desarrollo, usar variables individuales
+        return {
+          type: 'postgres' as const,
+          host: configService.get<string>('DB_HOST'),
+          port: configService.get<number>('DB_PORT'),
+          username: configService.get<string>('DB_USER'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_NAME'),
+          entities: [__dirname + '/modules/**/*.entity{.ts,.js}', __dirname + '/common/entities/**/*.entity{.ts,.js}'],
+          migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
+          synchronize: false,
+          logging: true,
+          ssl: false,
+        };
+      },
     }),
     UsersModule,
     ClientsModule,
