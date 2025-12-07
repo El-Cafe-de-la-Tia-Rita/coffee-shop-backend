@@ -2,8 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { runMigrations } from './database/migration.runner';
 
 async function bootstrap() {
+  // Ejecutar migraciones en producción
+  if (process.env.NODE_ENV === 'production') {
+    console.log('🔄 Running migrations...');
+    await runMigrations();
+  }
+  
   const app = await NestFactory.create(AppModule);
 
   // Global prefix

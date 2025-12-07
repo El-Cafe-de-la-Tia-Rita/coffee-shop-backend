@@ -41,7 +41,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
     "start:dev": "NODE_ENV=development ts-node -r tsconfig-paths/register src/main.ts",
-    "start:prod": "npm run build && node ./node_modules/typeorm/cli.js migration:run -d dist/config/data-source.js && node dist/main.js",
+    "start:prod": "npm run build && node dist/main.js",
     
     "typeorm": "NODE_ENV=development ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./node_modules/typeorm/cli.js",
     "migration:generate": "pnpm typeorm migration:generate src/database/migrations/InitialMigration -d src/config/data-source.ts",
