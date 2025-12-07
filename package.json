@@ -13,6 +13,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "dotenv": "^17.2.3",
+    "module-alias": "^2.2.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
     "passport": "^0.7.0",
@@ -38,13 +39,16 @@
     "typeorm-ts-node-commonjs": "^0.3.20",
     "typescript": "^5.9.3"
   },
+  "_moduleAliases": {
+    "@common": "dist/common",
+    "@modules": "dist/modules"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:prod": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:prod": "npm run build:prod && node dist/main.js",
-
     "typeorm": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register --project tsconfig.typeorm.json ./node_modules/typeorm/cli.js",
     "migration:generate": "pnpm typeorm migration:generate src/database/migrations/InitialMigration -d src/config/data-source.ts",
     "migration:run": "pnpm typeorm migration:run -d src/config/data-source.ts",

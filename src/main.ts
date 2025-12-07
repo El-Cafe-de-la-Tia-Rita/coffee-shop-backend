@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { runMigrations } from './database/migration.runner';
+import 'module-alias/register';
 
 async function bootstrap() {
   // Ejecutar migraciones en producción
