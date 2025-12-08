@@ -41,6 +41,10 @@ export class CreateMicroBatchDto {
   @Min(0)
   production_cost?: number; // For associated expense
 
+  @IsString()
+  @IsOptional()
+  provider?: string; // For associated expense
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductOutputDto)

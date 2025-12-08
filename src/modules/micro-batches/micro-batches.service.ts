@@ -41,6 +41,7 @@ export class MicroBatchesService {
       production_cost,
       roast_type,
       productOutputs,
+      provider,
       ...microBatchData
     } = createMicroBatchDto;
 
@@ -134,6 +135,7 @@ export class MicroBatchesService {
         responsible: currentUser.name,
         payment_method: PaymentMethod.OTHER,
         receipt_url: 'N/A',
+        provider: provider ?? createMicroBatchDto.roast_responsible,
       });
       await this.expensesRepository.save(expense);
     }
