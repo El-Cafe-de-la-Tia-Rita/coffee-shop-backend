@@ -136,7 +136,7 @@ export class OrdersService {
       const productUpdates: Product[] = [];
 
       for (const itemDto of orderItems) {
-        const product = await productRepository.findOneBy({ id: itemDto.productId });
+        const product = await productRepository.findOne({ where: { id: itemDto.productId }, relations: ['product_catalog'] });
         if (!product) {
           throw new NotFoundException(`Product with ID "${itemDto.productId}" not found.`);
         }
