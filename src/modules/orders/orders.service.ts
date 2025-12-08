@@ -240,12 +240,28 @@ export class OrdersService {
     if (typeof paymentConfirmed === 'boolean') queryBuilder.andWhere('order.payment_confirmed = :paymentConfirmed', { paymentConfirmed });
 
     if (startDate && endDate) {
-      queryBuilder.andWhere('order.order_date BETWEEN :startDate AND :endDate', { startDate, endDate });
-    } else if (startDate) {
-      queryBuilder.andWhere('order.order_date >= :startDate', { startDate });
-    } else if (endDate) {
-      queryBuilder.andWhere('order.order_date <= :endDate', { endDate });
-    }
+  // Convert YYYY-MM-DD to full datetime range
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+  
+  queryBuilder.andWhere('order.order_date >= :startDate AND order.order_date <= :endDate', { 
+    startDate: start.toISOString(), 
+    endDate: end.toISOString() 
+  });
+} else if (startDate) {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  
+  queryBuilder.andWhere('order.order_date >= :startDate', { startDate: start.toISOString() });
+} else if (endDate) {
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+  
+  queryBuilder.andWhere('order.order_date <= :endDate', { endDate: end.toISOString() });
+}
 
     const [data, total] = await queryBuilder
       .take(limit)
@@ -381,12 +397,28 @@ export class OrdersService {
     if (typeof paymentConfirmed === 'boolean') queryBuilder.andWhere('order.payment_confirmed = :paymentConfirmed', { paymentConfirmed });
 
     if (startDate && endDate) {
-      queryBuilder.andWhere('order.order_date BETWEEN :startDate AND :endDate', { startDate, endDate });
-    } else if (startDate) {
-      queryBuilder.andWhere('order.order_date >= :startDate', { startDate });
-    } else if (endDate) {
-      queryBuilder.andWhere('order.order_date <= :endDate', { endDate });
-    }
+  // Convert YYYY-MM-DD to full datetime range
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+  
+  queryBuilder.andWhere('order.order_date >= :startDate AND order.order_date <= :endDate', { 
+    startDate: start.toISOString(), 
+    endDate: end.toISOString() 
+  });
+} else if (startDate) {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  
+  queryBuilder.andWhere('order.order_date >= :startDate', { startDate: start.toISOString() });
+} else if (endDate) {
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+  
+  queryBuilder.andWhere('order.order_date <= :endDate', { endDate: end.toISOString() });
+}
 
     const [data, total] = await queryBuilder
       .take(limit)
