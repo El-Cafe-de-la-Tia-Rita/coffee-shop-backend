@@ -43,6 +43,7 @@ export class MicroBatchesController {
               concept: 'Roasting service fee',
               provider: 'Roast Masters Inc.',
               description: 'Fee for using the roasting machine',
+              payment_method: 'CASH', // Example payment method
             },
             {
               amount: 5.00,
@@ -50,6 +51,7 @@ export class MicroBatchesController {
               concept: 'Coffee bags',
               provider: 'Packaging Solutions',
               description: '25 bags for 250g coffee',
+              payment_method: 'CREDIT_CARD', // Example payment method
             },
           ],
           productOutputs: [

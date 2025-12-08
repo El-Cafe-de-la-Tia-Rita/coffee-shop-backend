@@ -1,5 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, Min, IsOptional, IsEnum } from 'class-validator';
 import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 export class MicroBatchExpenseDto {
   @IsNumber()
@@ -21,4 +22,8 @@ export class MicroBatchExpenseDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsEnum(PaymentMethod)
+  @IsNotEmpty()
+  payment_method: PaymentMethod;
 }

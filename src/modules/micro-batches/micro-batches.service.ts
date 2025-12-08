@@ -130,7 +130,7 @@ export class MicroBatchesService {
           batch: parentBatch,
           date: new Date().toISOString().split('T')[0], // Today's date for expense
           responsible: currentUser.name,
-          payment_method: PaymentMethod.OTHER, // Default value
+          payment_method: expenseDto.payment_method, 
           receipt_url: 'N/A', // Default value
         });
         await this.expensesRepository.save(expense);
