@@ -2,6 +2,7 @@ import { IsString, IsNotEmpty, IsDateString, IsNumber, Min, IsOptional, IsEnum, 
 import { RoastType } from '@common/enums/roast-type.enum';
 import { Type } from 'class-transformer';
 import { ProductOutputDto } from './product-output.dto';
+import { MicroBatchExpenseDto } from './micro-batch-expense.dto';
 
 export class CreateMicroBatchDto {
   @IsString()
@@ -36,14 +37,11 @@ export class CreateMicroBatchDto {
   @IsOptional()
   observations?: string;
 
-  @IsNumber()
+  @IsArray()
   @IsOptional()
-  @Min(0)
-  production_cost?: number; // For associated expense
-
-  @IsString()
-  @IsOptional()
-  provider?: string; // For associated expense
+  @ValidateNested({ each: true })
+  @Type(() => MicroBatchExpenseDto)
+  expenses?: MicroBatchExpenseDto[];
 
   @IsArray()
   @ValidateNested({ each: true })

@@ -38,10 +38,9 @@ export class MicroBatchesService {
     const {
       batchId,
       green_kg_used,
-      production_cost,
       roast_type,
       productOutputs,
-      provider,
+      expenses,
       ...microBatchData
     } = createMicroBatchDto;
 
@@ -123,21 +122,19 @@ export class MicroBatchesService {
     }
     await this.batchesRepository.save(parentBatch);
 
-    // Create associated Expense record if production_cost is provided
-    if (production_cost) {
-      const expense = this.expensesRepository.create({
-        amount: production_cost,
-        category: ExpenseCategory.PRODUCTION,
-        description: `Production cost for micro-batch ${savedMicroBatch.code}`,
-        batch: parentBatch,
-        date: new Date().toISOString().split('T')[0], // Today's date for expense
-        concept: `MicroBatch ${savedMicroBatch.code} production`,
-        responsible: currentUser.name,
-        payment_method: PaymentMethod.OTHER,
-        receipt_url: 'N/A',
-        provider: provider ?? createMicroBatchDto.roast_responsible,
-      });
-      await this.expensesRepository.save(expense);
+    // Create associated Expense records if expenses are provided
+    if (expenses && expenses.length > 0) {
+      for (const expenseDto of expenses) {
+        const expense = this.expensesRepository.create({
+          ...expenseDto,
+          batch: parentBatch,
+          date: new Date().toISOString().split('T')[0], // Today's date for expense
+          responsible: currentUser.name,
+          payment_method: PaymentMethod.OTHER, // Default value
+          receipt_url: 'N/A', // Default value
+        });
+        await this.expensesRepository.save(expense);
+      }
     }
     
     // Link products to microbatch and save

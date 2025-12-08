@@ -26,7 +26,7 @@ export class MicroBatchesController {
     type: CreateMicroBatchDto,
     examples: {
       a: {
-        summary: 'New Micro Batch with multiple product outputs',
+        summary: 'New Micro Batch with multiple expenses and product outputs',
         value: {
           batchId: 'uuid-of-parent-batch',
           code: 'MB001',
@@ -35,17 +35,32 @@ export class MicroBatchesController {
           green_kg_used: 10,
           roast_type: RoastType.DARK,
           roast_responsible: 'Jane Doe',
-          observations: 'First roast of the day, producing 250g bags and 100g samples',
-          production_cost: 15.00,
+          observations: 'First roast of the day',
+          expenses: [
+            {
+              amount: 15.00,
+              category: 'PRODUCTION',
+              concept: 'Roasting service fee',
+              provider: 'Roast Masters Inc.',
+              description: 'Fee for using the roasting machine',
+            },
+            {
+              amount: 5.00,
+              category: 'SUPPLIES',
+              concept: 'Coffee bags',
+              provider: 'Packaging Solutions',
+              description: '25 bags for 250g coffee',
+            },
+          ],
           productOutputs: [
             {
-              productCatalogId: 'uuid-of-roasted-250g-bag-catalog', // Example: Roasted Coffee 250g Bag
-              count: 20, // 20 units of 250g bags
+              productCatalogId: 'uuid-of-roasted-250g-bag-catalog',
+              count: 20,
               grindType: GrindType.WHOLE_BEAN,
             },
             {
-              productCatalogId: 'uuid-of-roasted-100g-sample-catalog', // Example: Roasted Coffee 100g Sample
-              count: 5, // 5 units of 100g samples
+              productCatalogId: 'uuid-of-roasted-100g-sample-catalog',
+              count: 5,
               grindType: GrindType.COARSE,
             },
           ],
