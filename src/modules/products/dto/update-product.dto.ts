@@ -9,6 +9,12 @@ export class UpdateProductDto {
   sale_price?: number;
 
   @ApiProperty({ required: false })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  stock_minimum?: number;
+
+  @ApiProperty({ required: false })
   @IsBoolean()
   @IsOptional()
   active?: boolean;

@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductStockDto } from './dto/update-product-stock.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ResponseProductDto } from './dto/response-product.dto';
 import { Roles } from '@common/decorators/roles.decorator';
@@ -210,7 +210,7 @@ export class ProductsController {
   @ApiOperation({ summary: 'Update a product stock item' })
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiBody({
-    type: UpdateProductStockDto,
+    type: UpdateProductDto,
     examples: {
       updatePrice: {
         summary: 'Update Product Sale Price',
@@ -223,6 +223,10 @@ export class ProductsController {
       updateCatalogName: {
         summary: 'Update Associated Product Catalog Name',
         value: { productCatalogName: 'New Roasted Coffee 250g Name' },
+      },
+      updateStockMinimum: {
+        summary: 'Update Product Stock Minimum',
+        value: { stock_minimum: 25 },
       },
     },
   })
@@ -258,7 +262,7 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Product not found.' })
   update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductStockDto,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.productsService.update(id, updateProductDto);
   }

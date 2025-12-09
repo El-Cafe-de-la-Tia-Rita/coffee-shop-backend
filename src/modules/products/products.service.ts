@@ -115,7 +115,7 @@ export class ProductsService {
     id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const { sale_price, active, productCatalogName } = updateProductDto;
+    const { sale_price, active, productCatalogName, stock_minimum } = updateProductDto;
     const product = await this.findOne(id);
 
     // Update ProductCatalog name if provided
@@ -134,6 +134,7 @@ export class ProductsService {
     await this.productsRepository.update(id, {
       sale_price,
       active,
+      stock_minimum,
     });
 
     return this.findOne(id);
