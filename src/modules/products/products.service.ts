@@ -92,22 +92,25 @@ export class ProductsService {
     return product;
   }
 
-  async update(id: string, updateProductStockDto: UpdateProductStockDto): Promise<Product> {
+// ...
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+    const { sale_price, active, productCatalogName } = updateProductDto;
     const product = await this.findOne(id);
 
     // Update ProductCatalog name if provided
-    if (updateProductStockDto.productCatalogName !== undefined) {
+    if (productCatalogName !== undefined) {
       const productCatalog = product.product_catalog;
-      if (productCatalog) {
-        productCatalog.name = updateProductStockDto.productCatalogName;
-        await this.productCatalogRepository.save(productCatalog);
+      if (!productCatalog) {
+        throw new NotFoundException(`ProductCatalog for Product with ID "${id}" not found`);
       }
+      productCatalog.name = productCatalogName;
+      await this.productCatalogRepository.save(productCatalog);
     }
 
     // Update Product fields
     await this.productsRepository.update(id, {
-      sale_price: updateProductStockDto.sale_price,
-      active: updateProductStockDto.active,
+      sale_price,
+      active,
     });
 
     return this.findOne(id);
