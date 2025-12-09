@@ -1,4 +1,24 @@
-import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductStockDto } from './dto/update-product-stock.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { ResponseProductDto } from './dto/response-product.dto';
@@ -28,8 +48,8 @@ export class ProductsController {
           grind_type: 'WHOLE_BEAN',
           stock_current: 200,
           stock_minimum: 50,
-          sale_price: 12.00,
-          unit_cost: 8.00,
+          sale_price: 12.0,
+          unit_cost: 8.0,
           active: true,
         },
       },
@@ -42,15 +62,18 @@ export class ProductsController {
     schema: {
       example: {
         id: 'uuid-of-product',
-        product_catalog: { id: 'uuid-of-product-catalog', name: 'Roasted Coffee 250g' },
+        product_catalog: {
+          id: 'uuid-of-product-catalog',
+          name: 'Roasted Coffee 250g',
+        },
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'RC-250G-DRK-WB-001',
         grind_type: 'WHOLE_BEAN',
         stock_current: 200,
         stock_reserved: 0,
         stock_minimum: 50,
-        sale_price: 12.00,
-        unit_cost: 8.00,
+        sale_price: 12.0,
+        unit_cost: 8.0,
         active: true,
         created_at: '2025-12-06T10:00:00.000Z',
         updated_at: '2025-12-06T10:00:00.000Z',
@@ -61,7 +84,10 @@ export class ProductsController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 404, description: 'Product Catalog or MicroBatch not found.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Product Catalog or MicroBatch not found.',
+  })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
@@ -77,15 +103,18 @@ export class ProductsController {
       example: [
         {
           id: 'uuid-of-product',
-          product_catalog: { id: 'uuid-of-product-catalog', name: 'Roasted Coffee 250g' },
+          product_catalog: {
+            id: 'uuid-of-product-catalog',
+            name: 'Roasted Coffee 250g',
+          },
           microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
           sku: 'RC-250G-DRK-WB-001',
           grind_type: 'WHOLE_BEAN',
           stock_current: 40,
           stock_reserved: 0,
           stock_minimum: 50,
-          sale_price: 12.00,
-          unit_cost: 8.00,
+          sale_price: 12.0,
+          unit_cost: 8.0,
           active: true,
           created_at: '2025-12-06T10:00:00.000Z',
           updated_at: '2025-12-06T10:00:00.000Z',
@@ -102,7 +131,9 @@ export class ProductsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
-  @ApiOperation({ summary: 'Get all product stock items with pagination and filters' })
+  @ApiOperation({
+    summary: 'Get all product stock items with pagination and filters',
+  })
   @ApiResponse({
     status: 200,
     description: 'A paginated list of product stock items.',
@@ -111,15 +142,18 @@ export class ProductsController {
       example: [
         {
           id: 'uuid-of-product',
-          product_catalog: { id: 'uuid-of-product-catalog', name: 'Roasted Coffee 250g' },
+          product_catalog: {
+            id: 'uuid-of-product-catalog',
+            name: 'Roasted Coffee 250g',
+          },
           microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
           sku: 'RC-250G-DRK-WB-001',
           grind_type: 'WHOLE_BEAN',
           stock_current: 200,
           stock_reserved: 0,
           stock_minimum: 50,
-          sale_price: 12.00,
-          unit_cost: 8.00,
+          sale_price: 12.0,
+          unit_cost: 8.0,
           active: true,
           created_at: '2025-12-06T10:00:00.000Z',
           updated_at: '2025-12-06T10:00:00.000Z',
@@ -145,15 +179,18 @@ export class ProductsController {
     schema: {
       example: {
         id: 'uuid-of-product',
-        product_catalog: { id: 'uuid-of-product-catalog', name: 'Roasted Coffee 250g' },
+        product_catalog: {
+          id: 'uuid-of-product-catalog',
+          name: 'Roasted Coffee 250g',
+        },
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'RC-250G-DRK-WB-001',
         grind_type: 'WHOLE_BEAN',
         stock_current: 200,
         stock_reserved: 0,
         stock_minimum: 50,
-        sale_price: 12.00,
-        unit_cost: 8.00,
+        sale_price: 12.0,
+        unit_cost: 8.0,
         active: true,
         created_at: '2025-12-06T10:00:00.000Z',
         updated_at: '2025-12-06T10:00:00.000Z',
@@ -177,7 +214,7 @@ export class ProductsController {
     examples: {
       updatePrice: {
         summary: 'Update Product Sale Price',
-        value: { sale_price: 15.50 },
+        value: { sale_price: 15.5 },
       },
       updateActiveStatus: {
         summary: 'Update Product Active Status',
@@ -196,15 +233,18 @@ export class ProductsController {
     schema: {
       example: {
         id: 'uuid-of-product',
-        product_catalog: { id: 'uuid-of-product-catalog', name: 'Roasted Coffee 250g' },
+        product_catalog: {
+          id: 'uuid-of-product-catalog',
+          name: 'Roasted Coffee 250g',
+        },
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'RC-250G-DRK-WB-001',
         grind_type: 'WHOLE_BEAN',
         stock_current: 180,
         stock_reserved: 0,
         stock_minimum: 50,
-        sale_price: 12.00,
-        unit_cost: 8.00,
+        sale_price: 12.0,
+        unit_cost: 8.0,
         active: true,
         created_at: '2025-12-06T10:00:00.000Z',
         updated_at: '2025-12-06T10:00:00.000Z',
@@ -216,7 +256,10 @@ export class ProductsController {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 404, description: 'Product not found.' })
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductStockDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductStockDto,
+  ) {
     return this.productsService.update(id, updateProductDto);
   }
 
@@ -224,7 +267,10 @@ export class ProductsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @ApiOperation({ summary: 'Delete a product stock item (soft delete)' })
   @ApiParam({ name: 'id', description: 'Product ID' })
-  @ApiResponse({ status: 200, description: 'The product stock item has been successfully deleted.' })
+  @ApiResponse({
+    status: 200,
+    description: 'The product stock item has been successfully deleted.',
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 404, description: 'Product not found.' })

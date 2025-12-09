@@ -1,5 +1,9 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { UpdateProductStockDto } from './dto/update-product-stock.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { ProductCatalog } from './entities/product-catalog.entity';
@@ -19,14 +23,22 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const { productCatalogId, microbatchId, ...productData } = createProductDto;
 
-    const productCatalog = await this.productCatalogRepository.findOneBy({ id: productCatalogId });
+    const productCatalog = await this.productCatalogRepository.findOneBy({
+      id: productCatalogId,
+    });
     if (!productCatalog) {
-      throw new NotFoundException(`ProductCatalog with ID "${productCatalogId}" not found`);
+      throw new NotFoundException(
+        `ProductCatalog with ID "${productCatalogId}" not found`,
+      );
     }
 
-    const microBatch = await this.microBatchRepository.findOneBy({ id: microbatchId });
+    const microBatch = await this.microBatchRepository.findOneBy({
+      id: microbatchId,
+    });
     if (!microBatch) {
-      throw new NotFoundException(`MicroBatch with ID "${microbatchId}" not found`);
+      throw new NotFoundException(
+        `MicroBatch with ID "${microbatchId}" not found`,
+      );
     }
 
     const newProduct = this.productsRepository.create({
@@ -37,7 +49,9 @@ export class ProductsService {
     return this.productsRepository.save(newProduct);
   }
 
-  async findAll(filterDto: FilterProductDto): Promise<PaginationResult<Product>> {
+  async findAll(
+    filterDto: FilterProductDto,
+  ): Promise<PaginationResult<Product>> {
     const {
       page = 1,
       limit = 10,
@@ -67,10 +81,14 @@ export class ProductsService {
       queryBuilder.andWhere('product.stock_current <= product.stock_minimum');
     }
     if (productCatalogCode) {
-      queryBuilder.andWhere('productCatalog.code ILIKE :productCatalogCode', { productCatalogCode: `%${productCatalogCode}%` });
+      queryBuilder.andWhere('productCatalog.code ILIKE :productCatalogCode', {
+        productCatalogCode: `%${productCatalogCode}%`,
+      });
     }
     if (productCatalogName) {
-      queryBuilder.andWhere('productCatalog.name ILIKE :productCatalogName', { productCatalogName: `%${productCatalogName}%` });
+      queryBuilder.andWhere('productCatalog.name ILIKE :productCatalogName', {
+        productCatalogName: `%${productCatalogName}%`,
+      });
     }
 
     const [data, total] = await queryBuilder
@@ -92,8 +110,11 @@ export class ProductsService {
     return product;
   }
 
-// ...
-  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+  // ...
+  async update(
+    id: string,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Product> {
     const { sale_price, active, productCatalogName } = updateProductDto;
     const product = await this.findOne(id);
 
@@ -101,7 +122,9 @@ export class ProductsService {
     if (productCatalogName !== undefined) {
       const productCatalog = product.product_catalog;
       if (!productCatalog) {
-        throw new NotFoundException(`ProductCatalog for Product with ID "${id}" not found`);
+        throw new NotFoundException(
+          `ProductCatalog for Product with ID "${id}" not found`,
+        );
       }
       productCatalog.name = productCatalogName;
       await this.productCatalogRepository.save(productCatalog);
@@ -124,7 +147,8 @@ export class ProductsService {
   }
 
   async checkLowStock(): Promise<Product[]> {
-    return this.productsRepository.createQueryBuilder('product')
+    return this.productsRepository
+      .createQueryBuilder('product')
       .leftJoinAndSelect('product.product_catalog', 'productCatalog')
       .where('product.stock_current <= product.stock_minimum')
       .getMany();
