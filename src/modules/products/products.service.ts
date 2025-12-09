@@ -1,9 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
-import { Product } from './entities/product.entity';
-import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductStockDto } from './dto/update-product-stock.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { ProductCatalog } from './entities/product-catalog.entity';
@@ -96,32 +92,24 @@ export class ProductsService {
     return product;
   }
 
-// ...
-  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    const { productCatalogId, microbatchId, ...productData } = updateProductDto;
+  async update(id: string, updateProductStockDto: UpdateProductStockDto): Promise<Product> {
     const product = await this.findOne(id);
 
-    let productCatalog: ProductCatalog | null = product.product_catalog; // Corrected type
-    if (productCatalogId) {
-      productCatalog = await this.productCatalogRepository.findOneBy({ id: productCatalogId });
-      if (!productCatalog) {
-        throw new NotFoundException(`ProductCatalog with ID "${productCatalogId}" not found`);
+    // Update ProductCatalog name if provided
+    if (updateProductStockDto.productCatalogName !== undefined) {
+      const productCatalog = product.product_catalog;
+      if (productCatalog) {
+        productCatalog.name = updateProductStockDto.productCatalogName;
+        await this.productCatalogRepository.save(productCatalog);
       }
     }
 
-    let microBatch: MicroBatch | null = product.microbatch; // Corrected type
-    if (microbatchId) {
-      microBatch = await this.microBatchRepository.findOneBy({ id: microbatchId });
-      if (!microBatch) {
-        throw new NotFoundException(`MicroBatch with ID "${microbatchId}" not found`);
-      }
-    }
-    
+    // Update Product fields
     await this.productsRepository.update(id, {
-      ...productData,
-      product_catalog: productCatalog ?? undefined, // Handle nullability for update
-      microbatch: microBatch ?? undefined, // Handle nullability for update
+      sale_price: updateProductStockDto.sale_price,
+      active: updateProductStockDto.active,
     });
+
     return this.findOne(id);
   }
 

@@ -27,6 +27,8 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "cross-env": "^10.1.0",
+    "tsconfig-paths": "^4.2.0",
     "typeorm-ts-node-commonjs": "^0.3.20",
     "typescript": "^5.9.3"
   },
