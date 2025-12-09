@@ -178,9 +178,17 @@ export class ProductsController {
   @ApiBody({
     type: UpdateProductDto,
     examples: {
-      a: {
-        summary: 'Update Stock Current',
-        value: { stock_current: 180 },
+      updatePrice: {
+        summary: 'Update Product Sale Price',
+        value: { sale_price: 15.50 },
+      },
+      updateActiveStatus: {
+        summary: 'Update Product Active Status',
+        value: { active: false },
+      },
+      updateCatalogName: {
+        summary: 'Update Associated Product Catalog Name',
+        value: { productCatalogName: 'New Roasted Coffee 250g Name' },
       },
     },
   })

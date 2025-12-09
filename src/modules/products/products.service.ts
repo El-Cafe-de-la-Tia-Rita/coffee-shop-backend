@@ -98,30 +98,25 @@ export class ProductsService {
 
 // ...
   async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
-    const { productCatalogId, microbatchId, ...productData } = updateProductDto;
+    const { sale_price, active, productCatalogName } = updateProductDto;
     const product = await this.findOne(id);
 
-    let productCatalog: ProductCatalog | null = product.product_catalog; // Corrected type
-    if (productCatalogId) {
-      productCatalog = await this.productCatalogRepository.findOneBy({ id: productCatalogId });
+    // Update ProductCatalog name if provided
+    if (productCatalogName !== undefined) {
+      const productCatalog = product.product_catalog;
       if (!productCatalog) {
-        throw new NotFoundException(`ProductCatalog with ID "${productCatalogId}" not found`);
+        throw new NotFoundException(`ProductCatalog for Product with ID "${id}" not found`);
       }
+      productCatalog.name = productCatalogName;
+      await this.productCatalogRepository.save(productCatalog);
     }
 
-    let microBatch: MicroBatch | null = product.microbatch; // Corrected type
-    if (microbatchId) {
-      microBatch = await this.microBatchRepository.findOneBy({ id: microbatchId });
-      if (!microBatch) {
-        throw new NotFoundException(`MicroBatch with ID "${microbatchId}" not found`);
-      }
-    }
-    
+    // Update Product fields
     await this.productsRepository.update(id, {
-      ...productData,
-      product_catalog: productCatalog ?? undefined, // Handle nullability for update
-      microbatch: microBatch ?? undefined, // Handle nullability for update
+      sale_price,
+      active,
     });
+
     return this.findOne(id);
   }
 
