@@ -25,7 +25,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "traceResolution": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
