@@ -2,10 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@common/*": ["common/*"],
-      "@modules/*": ["modules/*"]
+      "@common/*": ["src/common/*"],
+      "@modules/*": ["src/modules/*"]
     }
   },
   "include": ["src/**/*.ts"],
