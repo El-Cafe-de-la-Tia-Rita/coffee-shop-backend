@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Ht
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderGeneralDto } from './dto/update-order-general.dto';
 import { ResponseOrderDto } from './dto/response-order.dto';
 import { OrderStatsDto } from './dto/order-stats.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';
@@ -103,14 +103,22 @@ createPublicOrder(@Body() createOrderDto: CreateOrderDto) {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
-  @ApiOperation({ summary: 'Update an order' })
+  @ApiOperation({ summary: 'Update an order (general fields)' })
   @ApiParam({ name: 'id', description: 'Order ID' })
   @ApiBody({
-    type: UpdateOrderDto,
+    type: UpdateOrderGeneralDto,
     examples: {
       updateNotes: {
         summary: 'Update order notes',
         value: { notes: 'Updated delivery instructions: call before arrival.' },
+      },
+      updateDeliveryAddress: {
+        summary: 'Update delivery address',
+        value: { delivery_address: '789 Pine St, New City, CA 90210' },
+      },
+      updateEstimatedDeliveryDate: {
+        summary: 'Update estimated delivery date',
+        value: { delivery_date_estimated: '2025-12-31' },
       },
     },
   })
@@ -119,7 +127,7 @@ createPublicOrder(@Body() createOrderDto: CreateOrderDto) {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiResponse({ status: 404, description: 'Order not found.' })
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderGeneralDto) {
     return this.ordersService.update(id, updateOrderDto);
   }
 
