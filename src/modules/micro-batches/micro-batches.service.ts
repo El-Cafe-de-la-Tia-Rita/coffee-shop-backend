@@ -64,10 +64,11 @@ export class MicroBatchesService {
     for (const output of productOutputs) {
       let productCatalog = productCatalogsMap.get(output.productCatalogId);
       if (!productCatalog) {
-        productCatalog = await this.productCatalogRepository.findOneBy({ id: output.productCatalogId });
-        if (!productCatalog) {
+        const foundCatalog = await this.productCatalogRepository.findOneBy({ id: output.productCatalogId });
+        if (!foundCatalog) {
           throw new NotFoundException(`ProductCatalog with ID "${output.productCatalogId}" not found`);
         }
+        productCatalog = foundCatalog;
         productCatalogsMap.set(output.productCatalogId, productCatalog);
       }
 
@@ -80,7 +81,7 @@ export class MicroBatchesService {
         stock_reserved: 0,
         stock_minimum: 0,
         sale_price: productCatalog.base_price,
-        unit_cost: 0, // Temporary, will be updated after microbatch is saved with expenses
+        // unit_cost will be calculated later after microbatch and its expenses are saved
         active: true,
       });
       productsToCreate.push(newProduct);
