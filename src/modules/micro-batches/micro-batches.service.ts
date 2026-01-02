@@ -170,6 +170,10 @@ export class MicroBatchesService {
     
     for (const product of productsToCreate) {
       const productCatalog = productCatalogsMap.get(product.product_catalog.id);
+      if (!productCatalog) {
+        // This case should ideally not happen if productCatalogsMap is correctly populated
+        throw new NotFoundException(`ProductCatalog with ID "${product.product_catalog.id}" not found in map.`);
+      }
       const unitsProduced =
         Number(microBatchWithRelations.roasted_kg_obtained) /
         (productCatalog.weight_grams / 1000); // Total units from this microbatch
