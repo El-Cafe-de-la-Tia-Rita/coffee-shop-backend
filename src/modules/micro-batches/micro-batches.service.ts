@@ -38,6 +38,7 @@ export class MicroBatchesService {
     const {
       batchId,
       green_kg_used,
+      roasted_kg_obtained,
       roast_type,
       productOutputs,
       expenses,
@@ -53,59 +54,64 @@ export class MicroBatchesService {
       throw new BadRequestException('Not enough green coffee available in the batch');
     }
 
-    // Calculate total roasted_kg_obtained from productOutputs
-    let total_roasted_kg_obtained = 0;
+    let total_weight_of_products = 0;
     const productsToCreate: Product[] = [];
     const inventoryMovementsToCreate: InventoryMovement[] = [];
 
+    // Temporary storage for product catalogs to avoid re-fetching
+    const productCatalogsMap = new Map<string, ProductCatalog>();
+
     for (const output of productOutputs) {
-      const productCatalog = await this.productCatalogRepository.findOneBy({ id: output.productCatalogId });
+      let productCatalog = productCatalogsMap.get(output.productCatalogId);
       if (!productCatalog) {
-        throw new NotFoundException(`ProductCatalog with ID "${output.productCatalogId}" not found`);
+        productCatalog = await this.productCatalogRepository.findOneBy({ id: output.productCatalogId });
+        if (!productCatalog) {
+          throw new NotFoundException(`ProductCatalog with ID "${output.productCatalogId}" not found`);
+        }
+        productCatalogsMap.set(output.productCatalogId, productCatalog);
       }
 
-      const roasted_grams_per_unit = productCatalog.weight_grams * output.count;
-      total_roasted_kg_obtained += roasted_grams_per_unit / 1000; // Convert to kg
+      total_weight_of_products += (productCatalog.weight_grams / 1000) * output.count;
 
       const newProduct = this.productsRepository.create({
         product_catalog: productCatalog,
-        sku: `${microBatchData.code}-${output.grindType}-${productCatalog.code}`, // Example SKU generation
         grind_type: output.grindType,
-        stock_current: output.count, // Stock is in units, not kg
+        stock_current: output.count,
         stock_reserved: 0,
-        stock_minimum: 0, // Default for now
-        sale_price: productCatalog.base_price, // Use base price from catalog
-        unit_cost: parentBatch.cost_per_kg * (productCatalog.weight_grams / 1000), // Cost per unit
+        stock_minimum: 0,
+        sale_price: productCatalog.base_price,
+        unit_cost: 0, // Temporary, will be updated after microbatch is saved with expenses
         active: true,
       });
       productsToCreate.push(newProduct);
 
-      // InventoryMovement for Product Stock
       const productInventoryMovement = this.inventoryMovementsRepository.create({
-        quantity: output.count, // Quantity is in units
+        quantity: output.count,
         movement_type: MovementType.INBOUND,
         product_stock: newProduct,
         user: currentUser,
-        unit: productCatalog.package_type, // Unit is from product catalog
+        unit: productCatalog.package_type,
         movement_date: new Date(),
         reason: InventoryMovementReason.MICROBATCH_PRODUCTION,
       });
       inventoryMovementsToCreate.push(productInventoryMovement);
     }
 
-    // Calculate shrinkage
-    const loss_kg = green_kg_used - total_roasted_kg_obtained;
-    const loss_percentage = (loss_kg / green_kg_used) * 100;
+    if (total_weight_of_products > roasted_kg_obtained) {
+      throw new BadRequestException('Total weight of products cannot exceed the roasted coffee obtained.');
+    }
 
+    const loss_kg = green_kg_used - roasted_kg_obtained;
     if (loss_kg < 0) {
       throw new BadRequestException('Roasted weight obtained cannot exceed green coffee used');
     }
+    const loss_percentage = (loss_kg / green_kg_used) * 100;
 
     const newMicroBatch = this.microBatchesRepository.create({
       ...microBatchData,
       batch: parentBatch,
       green_kg_used,
-      roasted_kg_obtained: total_roasted_kg_obtained, // Set total calculated
+      roasted_kg_obtained,
       loss_kg,
       loss_percentage,
       roast_type,
@@ -113,7 +119,6 @@ export class MicroBatchesService {
 
     const savedMicroBatch = await this.microBatchesRepository.save(newMicroBatch);
 
-    // Update parent Batch's available green_kg and status
     parentBatch.green_kg_available -= green_kg_used;
     if (parentBatch.green_kg_available <= 0) {
       parentBatch.status = BatchStatus.FINISHED;
@@ -122,33 +127,65 @@ export class MicroBatchesService {
     }
     await this.batchesRepository.save(parentBatch);
 
-    // Create associated Expense records if expenses are provided
     if (expenses && expenses.length > 0) {
       for (const expenseDto of expenses) {
         const expense = this.expensesRepository.create({
           ...expenseDto,
-          batch: parentBatch,
-          date: new Date().toISOString().split('T')[0], // Today's date for expense
+          microbatch: savedMicroBatch, // Link to the newly created microbatch
+          date: new Date().toISOString().split('T')[0],
           responsible: currentUser.name,
-          payment_method: expenseDto.payment_method, 
           receipt_url: 'N/A', // Default value
         });
         await this.expensesRepository.save(expense);
       }
     }
     
-    // Link products to microbatch and save
+    // After microbatch is saved and expenses are linked, fetch again to get all relations for unit_cost calculation
+    const microBatchWithRelations = await this.microBatchesRepository.findOne({
+      where: { id: savedMicroBatch.id },
+      relations: ['batch', 'batch.expenses', 'expenses'],
+    });
+
+    if (!microBatchWithRelations) {
+        throw new NotFoundException('MicroBatch with relations not found after creation.');
+    }
+
+    // Calculate Unit Cost for each product
+    const batchExpenses = microBatchWithRelations.batch.expenses.reduce(
+      (sum, expense) => sum + Number(expense.amount),
+      0,
+    );
+    const totalBatchCost = Number(microBatchWithRelations.batch.total_cost) + batchExpenses;
+    const proratedBatchCost =
+      (Number(microBatchWithRelations.green_kg_used) / Number(microBatchWithRelations.batch.green_kg)) *
+      totalBatchCost;
+
+    const directMicroBatchExpenses = microBatchWithRelations.expenses.reduce(
+      (sum, expense) => sum + Number(expense.amount),
+      0,
+    );
+
+    const totalMicroBatchCost = proratedBatchCost + directMicroBatchExpenses;
+    
     for (const product of productsToCreate) {
-      product.microbatch = savedMicroBatch;
+      const productCatalog = productCatalogsMap.get(product.product_catalog.id);
+      const unitsProduced =
+        Number(microBatchWithRelations.roasted_kg_obtained) /
+        (productCatalog.weight_grams / 1000); // Total units from this microbatch
+      
+      const unitCost = unitsProduced > 0 ? totalMicroBatchCost / unitsProduced : 0;
+      product.unit_cost = unitCost;
+      product.microbatch = microBatchWithRelations;
       await this.productsRepository.save(product);
-    }
 
-    // Link inventory movements to products and save
-    for (const movement of inventoryMovementsToCreate) {
-      movement.product_stock = movement.product_stock; // Ensure product_stock is linked
-      await this.inventoryMovementsRepository.save(movement);
+      // Save inventory movements here as well, since product now has its final unit_cost
+      for (const movement of inventoryMovementsToCreate) {
+        if (movement.product_stock.id === product.id) { // Match movement to product
+            await this.inventoryMovementsRepository.save(movement);
+        }
+      }
     }
-
+    
     return savedMicroBatch;
   }
 

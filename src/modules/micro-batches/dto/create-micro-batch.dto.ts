@@ -25,6 +25,10 @@ export class CreateMicroBatchDto {
   @Min(0)
   green_kg_used: number;
 
+  @IsNumber()
+  @Min(0)
+  roasted_kg_obtained: number;
+
   @IsEnum(RoastType)
   @IsNotEmpty()
   roast_type: RoastType;
