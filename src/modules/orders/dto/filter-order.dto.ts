@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsInt, Min, Max } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsArray, IsIn } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { PaginationDto } from '@common/dto/pagination.dto';
@@ -12,15 +12,25 @@ export class FilterOrderDto extends PaginationDto {
   @IsString()
   clientId?: string;
 
-  @ApiPropertyOptional({ enum: OrderStatus })
+  @ApiPropertyOptional({
+    enum: OrderStatus,
+    isArray: true,
+    description: 'Filter by one or more order statuses.',
+  })
   @IsOptional()
-  @IsEnum(OrderStatus)
-  status?: OrderStatus;
+  @IsArray()
+  @IsIn(Object.values(OrderStatus), { each: true })
+  status?: OrderStatus[];
 
-  @ApiPropertyOptional({ enum: PaymentMethod })
+  @ApiPropertyOptional({
+    enum: PaymentMethod,
+    isArray: true,
+    description: 'Filter by one or more payment methods.',
+  })
   @IsOptional()
-  @IsEnum(PaymentMethod)
-  paymentMethod?: PaymentMethod;
+  @IsArray()
+  @IsIn(Object.values(PaymentMethod), { each: true })
+  paymentMethod?: PaymentMethod[];
 
   @ApiPropertyOptional({ enum: OrderOrigin })
   @IsOptional()

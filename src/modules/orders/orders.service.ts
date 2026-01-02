@@ -234,8 +234,20 @@ export class OrdersService {
     queryBuilder.leftJoinAndSelect('product_stock.product_catalog', 'product_catalog');
 
     if (clientId) queryBuilder.andWhere('client.id = :clientId', { clientId });
-    if (status) queryBuilder.andWhere('order.status = :status', { status });
-    if (paymentMethod) queryBuilder.andWhere('order.payment_method = :paymentMethod', { paymentMethod });
+    if (status) {
+      if (Array.isArray(status)) {
+        queryBuilder.andWhere('order.status IN (:...status)', { status });
+      } else {
+        queryBuilder.andWhere('order.status = :status', { status });
+      }
+    }
+    if (paymentMethod) {
+      if (Array.isArray(paymentMethod)) {
+        queryBuilder.andWhere('order.payment_method IN (:...paymentMethod)', { paymentMethod });
+      } else {
+        queryBuilder.andWhere('order.payment_method = :paymentMethod', { paymentMethod });
+      }
+    }
     if (origin) queryBuilder.andWhere('order.origin = :origin', { origin });
     if (typeof paymentConfirmed === 'boolean') queryBuilder.andWhere('order.payment_confirmed = :paymentConfirmed', { paymentConfirmed });
 
@@ -391,8 +403,20 @@ export class OrdersService {
 
     queryBuilder.andWhere('client.id = :clientId', { clientId });
 
-    if (status) queryBuilder.andWhere('order.status = :status', { status });
-    if (paymentMethod) queryBuilder.andWhere('order.payment_method = :paymentMethod', { paymentMethod });
+    if (status) {
+      if (Array.isArray(status)) {
+        queryBuilder.andWhere('order.status IN (:...status)', { status });
+      } else {
+        queryBuilder.andWhere('order.status = :status', { status });
+      }
+    }
+    if (paymentMethod) {
+      if (Array.isArray(paymentMethod)) {
+        queryBuilder.andWhere('order.payment_method IN (:...paymentMethod)', { paymentMethod });
+      } else {
+        queryBuilder.andWhere('order.payment_method = :paymentMethod', { paymentMethod });
+      }
+    }
     if (origin) queryBuilder.andWhere('order.origin = :origin', { origin });
     if (typeof paymentConfirmed === 'boolean') queryBuilder.andWhere('order.payment_confirmed = :paymentConfirmed', { paymentConfirmed });
 
@@ -427,6 +451,17 @@ export class OrdersService {
       .getManyAndCount();
 
     return { data, total, page, limit };
+  }
+
+  async getPendingOrdersCount(): Promise<number> {
+    return this.ordersRepository.count({
+      where: [
+        { status: OrderStatus.PENDING },
+        { status: OrderStatus.CONFIRMED },
+        { status: OrderStatus.PREPARING },
+        { status: OrderStatus.READY },
+      ],
+    });
   }
 
   async getStatistics(): Promise<OrderStatsDto> {
@@ -466,7 +501,7 @@ export class OrdersService {
       .addSelect('SUM(orderItem.quantity)', 'count')
       .addSelect('SUM(orderItem.subtotal)', 'totalAmount')
       .groupBy('product_catalog.name')
-      .orderBy('totalAmount', 'DESC')
+      .orderBy('SUM(orderItem.subtotal)', 'DESC')
       .limit(5)
       .getRawMany();
 

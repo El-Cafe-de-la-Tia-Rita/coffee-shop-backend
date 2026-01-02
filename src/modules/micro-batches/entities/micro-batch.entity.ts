@@ -9,6 +9,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
+import { Expense } from '../../expenses/entities/expense.entity';
 import { Product } from '../../products/entities/product.entity';
 import { RoastType } from '@common/enums/roast-type.enum';
 
@@ -62,4 +63,7 @@ export class MicroBatch {
   /** Relations */
   @OneToMany(() => Product, (p) => p.microbatch)
   product_stock: Product[];
+
+  @OneToMany(() => Expense, (e) => e.microbatch)
+  expenses: Expense[];
 }

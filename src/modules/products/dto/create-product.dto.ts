@@ -1,6 +1,8 @@
-import { IsString, IsNotEmpty, IsNumber, Min, IsEnum, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, IsEnum, IsBoolean, IsOptional, ValidateNested, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { GrindType } from '@common/enums/grind-type.enum';
+import { ProductExpenseDto } from './product-expense.dto';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @ApiProperty()
@@ -13,10 +15,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   microbatchId: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  @IsNotEmpty()
-  sku: string;
+  @IsOptional()
+  sku?: string;
 
   @ApiProperty({ enum: GrindType })
   @IsEnum(GrindType)
@@ -45,14 +47,21 @@ export class CreateProductDto {
   @Min(0)
   sale_price: number;
 
-  @ApiProperty()
-  @IsNumber()
-  @Min(0)
-  unit_cost: number;
+  @ApiProperty({
+    type: [ProductExpenseDto],
+    description: 'List of expenses associated with the product creation (e.g., bags).',
+    required: false
+  })
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ProductExpenseDto)
+  expenses?: ProductExpenseDto[];
 
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
   active?: boolean;
 }
+
 

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
 import { ExpenseCategory } from '@common/enums/expense-category.enum';
+import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
 import { PaymentMethod } from '@common/enums/payment-method.enum';
 
 @Entity('expenses')
@@ -18,6 +19,9 @@ export class Expense {
 
   @ManyToOne(() => Batch, (l) => l.expenses, { nullable: true })
   batch?: Batch;
+
+  @ManyToOne(() => MicroBatch, (m) => m.expenses, { nullable: true })
+  microbatch?: MicroBatch;
 
   @Column({ type: 'date' })
   date: string;

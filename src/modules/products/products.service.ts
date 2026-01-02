@@ -18,10 +18,14 @@ export class ProductsService {
     private productCatalogRepository: Repository<ProductCatalog>,
     @InjectRepository(MicroBatch)
     private microBatchRepository: Repository<MicroBatch>,
+    @InjectRepository(Expense)
+    private expensesRepository: Repository<Expense>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const { productCatalogId, microbatchId, ...productData } = createProductDto;
+  async create(createProductDto: CreateProductDto, currentUser: User): Promise<Product> {
+    const { productCatalogId, microbatchId, expenses, ...productData } = createProductDto;
 
     const productCatalog = await this.productCatalogRepository.findOneBy({
       id: productCatalogId,
@@ -32,19 +36,62 @@ export class ProductsService {
       );
     }
 
-    const microBatch = await this.microBatchRepository.findOneBy({
-      id: microbatchId,
+    const microBatch = await this.microBatchRepository.findOne({
+      where: { id: microbatchId },
+      relations: ['batch', 'batch.expenses', 'expenses'],
     });
     if (!microBatch) {
       throw new NotFoundException(
         `MicroBatch with ID "${microbatchId}" not found`,
       );
     }
+    
+    // Create associated Expense records if expenses are provided
+    if (expenses && expenses.length > 0) {
+      for (const expenseDto of expenses) {
+        const expense = this.expensesRepository.create({
+          ...expenseDto,
+          microbatch: microBatch,
+          date: new Date().toISOString().split('T')[0], // Today's date for expense
+          responsible: currentUser.name,
+          receipt_url: 'N/A', // Default value
+        });
+        await this.expensesRepository.save(expense);
+      }
+    }
+
+    // Recalculate microbatch with new expenses
+    const updatedMicroBatch = await this.microBatchRepository.findOne({
+      where: { id: microbatchId },
+      relations: ['batch', 'batch.expenses', 'expenses'],
+    });
+
+    // Calculate Unit Cost
+    const batchExpenses = updatedMicroBatch.batch.expenses.reduce(
+      (sum, expense) => sum + Number(expense.amount),
+      0,
+    );
+    const totalBatchCost = Number(updatedMicroBatch.batch.total_cost) + batchExpenses;
+    const proratedBatchCost =
+      (Number(updatedMicroBatch.green_kg_used) / Number(updatedMicroBatch.batch.green_kg)) *
+      totalBatchCost;
+
+    const directMicroBatchExpenses = updatedMicroBatch.expenses.reduce(
+      (sum, expense) => sum + Number(expense.amount),
+      0,
+    );
+
+    const totalMicroBatchCost = proratedBatchCost + directMicroBatchExpenses;
+    const unitsProduced =
+      Number(updatedMicroBatch.roasted_kg_obtained) /
+      (productCatalog.weight_grams / 1000);
+    const unitCost = totalMicroBatchCost / unitsProduced;
 
     const newProduct = this.productsRepository.create({
       ...productData,
       product_catalog: productCatalog,
-      microbatch: microBatch,
+      microbatch: updatedMicroBatch,
+      unit_cost: unitCost,
     });
     return this.productsRepository.save(newProduct);
   }
