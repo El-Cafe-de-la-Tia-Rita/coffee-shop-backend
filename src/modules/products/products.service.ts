@@ -63,6 +63,20 @@ export class ProductsService {
       }
     }
 
+    const existingProducts = await this.productsRepository.find({
+      where: { microbatch: { id: microbatchId } },
+      relations: ['product_catalog'],
+    });
+    const totalWeightUsed = existingProducts.reduce((sum, product) => {
+      return sum + (product.stock_current * (product.product_catalog.weight_grams / 1000));
+    }, 0);
+
+    const newProductWeight = createProductDto.stock_current * (productCatalog.weight_grams / 1000);
+
+    if (totalWeightUsed + newProductWeight > Number(microBatch.roasted_kg_obtained)) {
+      throw new BadRequestException('The amount of product stock exceeds the roasted coffee available in the micro-batch.');
+    }
+
     // Now, calculate the unit cost with all expenses included
     const batchExpenses = microBatch.batch.expenses.reduce(
       (sum, expense) => sum + Number(expense.amount),

@@ -33,6 +33,7 @@ export class MicroBatchesController {
           roast_number: 1,
           roast_date: '2025-12-06',
           green_kg_used: 10,
+          roasted_kg_obtained: 8.5, // Actual measured weight
           roast_type: RoastType.DARK,
           roast_responsible: 'Jane Doe',
           observations: 'First roast of the day',
@@ -42,28 +43,14 @@ export class MicroBatchesController {
               category: 'PRODUCTION',
               concept: 'Roasting service fee',
               provider: 'Roast Masters Inc.',
-              description: 'Fee for using the roasting machine',
-              payment_method: 'CASH', // Example payment method
-            },
-            {
-              amount: 5.00,
-              category: 'SUPPLIES',
-              concept: 'Coffee bags',
-              provider: 'Packaging Solutions',
-              description: '25 bags for 250g coffee',
-              payment_method: 'CREDIT_CARD', // Example payment method
+              payment_method: 'CASH',
             },
           ],
           productOutputs: [
             {
               productCatalogId: 'uuid-of-roasted-250g-bag-catalog',
-              count: 20,
+              count: 34, // 34 bags * 250g = 8.5kg
               grindType: GrindType.WHOLE_BEAN,
-            },
-            {
-              productCatalogId: 'uuid-of-roasted-100g-sample-catalog',
-              count: 5,
-              grindType: GrindType.COARSE,
             },
           ],
         },
@@ -80,18 +67,17 @@ export class MicroBatchesController {
         batch: {
           id: 'uuid-of-parent-batch',
           code: 'BATCH-001',
-          // ... other batch details
         },
         code: 'MB001',
         roast_number: 1,
         roast_date: '2025-12-06',
         green_kg_used: 10,
-        total_roasted_kg_obtained: 5.5, // Calculated from product outputs
-        loss_kg: 4.5,
-        loss_percentage: 45.00,
+        roasted_kg_obtained: 8.5, // From input
+        loss_kg: 1.5,
+        loss_percentage: 15.00,
         roast_type: RoastType.DARK,
         roast_responsible: 'Jane Doe',
-        observations: 'First roast of the day, producing 250g bags and 100g samples',
+        observations: 'First roast of the day',
         created_at: '2025-12-06T10:00:00.000Z',
         updated_at: '2025-12-06T10:00:00.000Z',
         deleted_at: null,
