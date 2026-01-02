@@ -8,6 +8,8 @@ import { FilterProductDto } from './dto/filter-product.dto';
 import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { ProductCatalog } from './entities/product-catalog.entity';
 import { MicroBatch } from '../micro-batches/entities/micro-batch.entity';
+import { Expense } from '../expenses/entities/expense.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ProductsService {
@@ -45,54 +47,51 @@ export class ProductsService {
         `MicroBatch with ID "${microbatchId}" not found`,
       );
     }
-    
-    // Create associated Expense records if expenses are provided
+
+    // Create and add new expenses to the in-memory microbatch object
     if (expenses && expenses.length > 0) {
       for (const expenseDto of expenses) {
-        const expense = this.expensesRepository.create({
+        const newExpense = this.expensesRepository.create({
           ...expenseDto,
           microbatch: microBatch,
-          date: new Date().toISOString().split('T')[0], // Today's date for expense
+          date: new Date().toISOString().split('T')[0],
           responsible: currentUser.name,
-          receipt_url: 'N/A', // Default value
+          receipt_url: 'N/A',
         });
-        await this.expensesRepository.save(expense);
+        const savedExpense = await this.expensesRepository.save(newExpense);
+        microBatch.expenses.push(savedExpense);
       }
     }
 
-    // Recalculate microbatch with new expenses
-    const updatedMicroBatch = await this.microBatchRepository.findOne({
-      where: { id: microbatchId },
-      relations: ['batch', 'batch.expenses', 'expenses'],
-    });
-
-    // Calculate Unit Cost
-    const batchExpenses = updatedMicroBatch.batch.expenses.reduce(
+    // Now, calculate the unit cost with all expenses included
+    const batchExpenses = microBatch.batch.expenses.reduce(
       (sum, expense) => sum + Number(expense.amount),
       0,
     );
-    const totalBatchCost = Number(updatedMicroBatch.batch.total_cost) + batchExpenses;
+    const totalBatchCost = Number(microBatch.batch.total_cost) + batchExpenses;
     const proratedBatchCost =
-      (Number(updatedMicroBatch.green_kg_used) / Number(updatedMicroBatch.batch.green_kg)) *
+      (Number(microBatch.green_kg_used) / Number(microBatch.batch.green_kg)) *
       totalBatchCost;
 
-    const directMicroBatchExpenses = updatedMicroBatch.expenses.reduce(
+    const directMicroBatchExpenses = microBatch.expenses.reduce(
       (sum, expense) => sum + Number(expense.amount),
       0,
     );
 
     const totalMicroBatchCost = proratedBatchCost + directMicroBatchExpenses;
     const unitsProduced =
-      Number(updatedMicroBatch.roasted_kg_obtained) /
+      Number(microBatch.roasted_kg_obtained) /
       (productCatalog.weight_grams / 1000);
-    const unitCost = totalMicroBatchCost / unitsProduced;
+      
+    const unitCost = unitsProduced > 0 ? totalMicroBatchCost / unitsProduced : 0;
 
     const newProduct = this.productsRepository.create({
       ...productData,
       product_catalog: productCatalog,
-      microbatch: updatedMicroBatch,
+      microbatch: microBatch,
       unit_cost: unitCost,
     });
+
     return this.productsRepository.save(newProduct);
   }
 
