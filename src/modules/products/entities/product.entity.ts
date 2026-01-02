@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { ProductCatalog } from './product-catalog.entity';
 import { MicroBatch } from '../../micro-batches/entities/micro-batch.entity';
@@ -57,6 +58,11 @@ export class Product {
 
   @DeleteDateColumn()
   deleted_at: Date;
+
+  @BeforeInsert()
+  generateSku() {
+    this.sku = `${this.microbatch.code}-${this.grind_type}-${this.product_catalog.code}`;
+  }
 
   /** Relations */
   @OneToMany(() => OrderItem, (i) => i.product_stock)

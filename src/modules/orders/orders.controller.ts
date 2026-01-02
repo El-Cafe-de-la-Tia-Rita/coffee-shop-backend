@@ -79,6 +79,16 @@ createPublicOrder(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.findByClient(clientId, filterDto);
   }
 
+  @Get('pending-count')
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
+  @ApiOperation({ summary: 'Get the count of orders that are not DELIVERED or CANCELLED' })
+  @ApiResponse({ status: 200, description: 'Count of pending orders.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  getPendingOrdersCount(): Promise<number> {
+    return this.ordersService.getPendingOrdersCount();
+  }
+
   @Get('statistics')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @ApiOperation({ summary: 'Get order statistics' })

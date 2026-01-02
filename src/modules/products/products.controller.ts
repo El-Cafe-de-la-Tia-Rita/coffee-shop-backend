@@ -26,6 +26,9 @@ import { Roles } from '@common/decorators/roles.decorator';
 import { UserRole } from '@common/enums/user-role.enum';
 import { RolesGuard } from '@common/guards/roles.guard';
 
+import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { User } from '../users/entities/user.entity';
+
 @ApiTags('Products')
 @ApiBearerAuth()
 @UseGuards(RolesGuard)
@@ -88,8 +91,8 @@ export class ProductsController {
     status: 404,
     description: 'Product Catalog or MicroBatch not found.',
   })
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  create(@Body() createProductDto: CreateProductDto, @CurrentUser() currentUser: User) {
+    return this.productsService.create(createProductDto, currentUser);
   }
 
   @Get('low-stock')
