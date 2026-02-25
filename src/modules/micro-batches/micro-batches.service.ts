@@ -191,6 +191,29 @@ export class MicroBatchesService {
     return savedMicroBatch;
   }
 
+  async findAvailable(): Promise<any[]> {
+    const microBatches = await this.microBatchesRepository
+      .createQueryBuilder('microBatch')
+      .leftJoinAndSelect('microBatch.product_stock', 'productStock')
+      .getMany();
+
+    return microBatches
+      .map((mb) => {
+        const weightUsed = mb.product_stock?.reduce((sum, ps) => {
+          return sum + (Number(ps.stock_current) * (Number(ps.weight_grams) / 1000));
+        }, 0) || 0;
+        
+        const available_kg = Number(mb.roasted_kg_obtained) - weightUsed;
+        
+        return {
+          ...mb,
+          available_kg: parseFloat(available_kg.toFixed(3)),
+          weight_used_kg: parseFloat(weightUsed.toFixed(3)),
+        };
+      })
+      .filter((mb) => mb.available_kg > 0);
+  }
+
   // Generic CRUD for MicroBatches
   async findAll(): Promise<MicroBatch[]> {
     return this.microBatchesRepository.find();
