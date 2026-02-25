@@ -92,6 +92,32 @@ export class MicroBatchesController {
     return this.microBatchesService.create(createMicroBatchDto, currentUser);
   }
 
+  @Get('available')
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
+  @ApiOperation({ summary: 'Get micro-batches that still have roasted coffee available to turn into products' })
+  @ApiResponse({
+    status: 200,
+    description: 'A list of available micro-batches with calculated weight usage.',
+    schema: {
+      example: [
+        {
+          id: 'uuid-of-microbatch',
+          code: 'MB001',
+          roasted_kg_obtained: 8.5,
+          available_kg: 3.0,
+          weight_used_kg: 5.5,
+          roast_date: '2025-12-06',
+          roast_type: RoastType.DARK,
+        },
+      ],
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  findAvailable() {
+    return this.microBatchesService.findAvailable();
+  }
+
   @Get()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
   @ApiOperation({ summary: 'Get all micro-batches' })
