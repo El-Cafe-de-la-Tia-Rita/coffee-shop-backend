@@ -16,12 +16,13 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductStockDto } from './dto/update-product-stock.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
-import { ResponseProductDto } from './dto/response-product.dto';
+import { ResponseProductStockDto } from './dto/response-product.dto';
 import { Roles } from '@common/decorators/roles.decorator';
 import { UserRole } from '@common/enums/user-role.enum';
 import { RolesGuard } from '@common/guards/roles.guard';
@@ -48,6 +49,8 @@ export class ProductsController {
           productCatalogId: 'uuid-of-product-catalog',
           microbatchId: 'uuid-of-microbatch',
           grind_type: 'WHOLE_BEAN',
+          weight_grams: 250,
+          package_type: 'BAG',
           stock_current: 200,
           stock_minimum: 50,
           sale_price: 12.0,
@@ -68,7 +71,7 @@ export class ProductsController {
   @ApiResponse({
     status: 201,
     description: 'The product stock item has been successfully created.',
-    type: ResponseProductDto,
+    type: ResponseProductStockDto,
     schema: {
       example: {
         id: 'uuid-of-product',
@@ -79,6 +82,8 @@ export class ProductsController {
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'MB001-WHOLE_BEAN-RC250G',
         grind_type: 'WHOLE_BEAN',
+        weight_grams: 250,
+        package_type: 'BAG',
         stock_current: 200,
         stock_reserved: 0,
         stock_minimum: 50,
@@ -108,7 +113,7 @@ export class ProductsController {
   @ApiResponse({
     status: 200,
     description: 'A list of products with low stock.',
-    type: [ResponseProductDto],
+    type: [ResponseProductStockDto],
     schema: {
       example: [
         {
@@ -120,6 +125,8 @@ export class ProductsController {
           microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
           sku: 'RC-250G-DRK-WB-001',
           grind_type: 'WHOLE_BEAN',
+          weight_grams: 250,
+          package_type: 'BAG',
           stock_current: 40,
           stock_reserved: 0,
           stock_minimum: 50,
@@ -144,10 +151,20 @@ export class ProductsController {
   @ApiOperation({
     summary: 'Get all product stock items with pagination and filters',
   })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'sku', required: false, type: String })
+  @ApiQuery({ name: 'grind_type', required: false, type: String })
+  @ApiQuery({ name: 'active', required: false, type: Boolean })
+  @ApiQuery({ name: 'isLowStock', required: false, type: Boolean })
+  @ApiQuery({ name: 'catalogId', required: false, type: String, description: 'Filter by Product Catalog ID' })
+  @ApiQuery({ name: 'productCatalogId', required: false, type: String, description: 'Filter by Product Catalog ID (Alias)' })
+  @ApiQuery({ name: 'productCatalogCode', required: false, type: String })
+  @ApiQuery({ name: 'productCatalogName', required: false, type: String })
   @ApiResponse({
     status: 200,
     description: 'A paginated list of product stock items.',
-    type: [ResponseProductDto],
+    type: [ResponseProductStockDto],
     schema: {
       example: [
         {
@@ -159,6 +176,8 @@ export class ProductsController {
           microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
           sku: 'RC-250G-DRK-WB-001',
           grind_type: 'WHOLE_BEAN',
+          weight_grams: 250,
+          package_type: 'BAG',
           stock_current: 200,
           stock_reserved: 0,
           stock_minimum: 50,
@@ -181,11 +200,11 @@ export class ProductsController {
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF)
   @ApiOperation({ summary: 'Get a product stock item by ID' })
-  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'id', description: 'ProductStock ID' })
   @ApiResponse({
     status: 200,
     description: 'The product stock item.',
-    type: ResponseProductDto,
+    type: ResponseProductStockDto,
     schema: {
       example: {
         id: 'uuid-of-product',
@@ -196,6 +215,8 @@ export class ProductsController {
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'RC-250G-DRK-WB-001',
         grind_type: 'WHOLE_BEAN',
+        weight_grams: 250,
+        package_type: 'BAG',
         stock_current: 200,
         stock_reserved: 0,
         stock_minimum: 50,
@@ -210,7 +231,7 @@ export class ProductsController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 404, description: 'Product not found.' })
+  @ApiResponse({ status: 404, description: 'ProductStock not found.' })
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
@@ -218,16 +239,16 @@ export class ProductsController {
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @ApiOperation({ summary: 'Update a product stock item' })
-  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'id', description: 'ProductStock ID' })
   @ApiBody({
-    type: UpdateProductDto,
+    type: UpdateProductStockDto,
     examples: {
       updatePrice: {
-        summary: 'Update Product Sale Price',
+        summary: 'Update ProductStock Sale Price',
         value: { sale_price: 15.5 },
       },
       updateActiveStatus: {
-        summary: 'Update Product Active Status',
+        summary: 'Update ProductStock Active Status',
         value: { active: false },
       },
       updateCatalogName: {
@@ -235,7 +256,7 @@ export class ProductsController {
         value: { productCatalogName: 'New Roasted Coffee 250g Name' },
       },
       updateStockMinimum: {
-        summary: 'Update Product Stock Minimum',
+        summary: 'Update ProductStock Stock Minimum',
         value: { stock_minimum: 25 },
       },
     },
@@ -243,7 +264,7 @@ export class ProductsController {
   @ApiResponse({
     status: 200,
     description: 'The product stock item has been successfully updated.',
-    type: ResponseProductDto,
+    type: ResponseProductStockDto,
     schema: {
       example: {
         id: 'uuid-of-product',
@@ -254,6 +275,8 @@ export class ProductsController {
         microbatch: { id: 'uuid-of-microbatch', code: 'MB001' },
         sku: 'RC-250G-DRK-WB-001',
         grind_type: 'WHOLE_BEAN',
+        weight_grams: 250,
+        package_type: 'BAG',
         stock_current: 180,
         stock_reserved: 0,
         stock_minimum: 50,
@@ -269,10 +292,10 @@ export class ProductsController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 404, description: 'Product not found.' })
+  @ApiResponse({ status: 404, description: 'ProductStock not found.' })
   update(
     @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
+    @Body() updateProductDto: UpdateProductStockDto,
   ) {
     return this.productsService.update(id, updateProductDto);
   }
@@ -280,14 +303,14 @@ export class ProductsController {
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   @ApiOperation({ summary: 'Delete a product stock item (soft delete)' })
-  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'id', description: 'ProductStock ID' })
   @ApiResponse({
     status: 200,
     description: 'The product stock item has been successfully deleted.',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiResponse({ status: 404, description: 'Product not found.' })
+  @ApiResponse({ status: 404, description: 'ProductStock not found.' })
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }

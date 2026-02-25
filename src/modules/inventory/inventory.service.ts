@@ -4,7 +4,7 @@ import { Repository, Between } from 'typeorm';
 import { InventoryMovement } from './entities/inventory-movement.entity';
 import { FilterInventoryMovementDto } from './dto/filter-inventory-movement.dto';
 import { PaginationResult } from '@common/interfaces/pagination-result.interface';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { ProductCatalog } from '../products/entities/product-catalog.entity';
 import { InventorySummaryDto, InventorySummaryItemDto } from './dto/inventory-summary.dto';
 
@@ -13,8 +13,8 @@ export class InventoryService {
   constructor(
     @InjectRepository(InventoryMovement)
     private inventoryMovementsRepository: Repository<InventoryMovement>,
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    @InjectRepository(ProductStock)
+    private productsRepository: Repository<ProductStock>,
     @InjectRepository(ProductCatalog)
     private productCatalogRepository: Repository<ProductCatalog>,
   ) {}
@@ -80,8 +80,8 @@ export class InventoryService {
         productCatalogId: productCatalog.id,
         productCatalogName: productCatalog.name,
         productCatalogCode: productCatalog.code,
-        packageType: productCatalog.package_type,
-        weightGrams: productCatalog.weight_grams,
+        packageType: product.package_type,
+        weightGrams: product.weight_grams,
         grindType: product.grind_type,
         totalStockCurrent: product.stock_current,
         totalStockReserved: product.stock_reserved,

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between, MoreThan } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
 import { Expense } from '../expenses/entities/expense.entity';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { Client } from '../clients/entities/client.entity';
 import { OrderItem } from '../orders/entities/order-item.entity';
 import { DashboardFilterDto } from './dto/dashboard-filter.dto';
@@ -23,8 +23,8 @@ export class DashboardService {
     private orderItemsRepository: Repository<OrderItem>,
     @InjectRepository(Expense)
     private expensesRepository: Repository<Expense>,
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    @InjectRepository(ProductStock)
+    private productsRepository: Repository<ProductStock>,
     @InjectRepository(Client)
     private clientsRepository: Repository<Client>,
   ) {}

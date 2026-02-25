@@ -30,11 +30,6 @@ export class FilterProductCatalogDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  package_type?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
   active?: boolean;

@@ -20,16 +20,6 @@ export class CreateProductCatalogDto {
   @ApiProperty()
   @IsNumber()
   @Min(0)
-  weight_grams: number;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  package_type: string;
-
-  @ApiProperty()
-  @IsNumber()
-  @Min(0)
   base_price: number;
 
   @ApiProperty()

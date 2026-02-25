@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
-import { Product } from '../../products/entities/product.entity';
+import { ProductStock } from '../../products/entities/product-stock.entity';
 
 @Entity('order_items')
 export class OrderItem {
@@ -18,8 +18,8 @@ export class OrderItem {
   @ManyToOne(() => Order, (o) => o.items)
   order: Order;
 
-  @ManyToOne(() => Product, (p) => p.order_items)
-  product_stock: Product;
+  @ManyToOne(() => ProductStock, (p) => p.order_items)
+  product_stock: ProductStock;
 
   @Column()
   quantity: number;

@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Batch } from '../../batches/entities/batch.entity';
 import { Expense } from '../../expenses/entities/expense.entity';
-import { Product } from '../../products/entities/product.entity';
+import { ProductStock } from '../../products/entities/product-stock.entity';
 import { RoastType } from '@common/enums/roast-type.enum';
 
 @Entity('microbatches')
@@ -61,8 +61,8 @@ export class MicroBatch {
   deleted_at: Date;
 
   /** Relations */
-  @OneToMany(() => Product, (p) => p.microbatch)
-  product_stock: Product[];
+  @OneToMany(() => ProductStock, (p) => p.microbatch)
+  product_stock: ProductStock[];
 
   @OneToMany(() => Expense, (e) => e.microbatch)
   expenses: Expense[];

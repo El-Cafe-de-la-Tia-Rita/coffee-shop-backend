@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from './entities/product.entity';
+import { ProductStock } from './entities/product-stock.entity';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { UpdateProductStockDto } from './dto/update-product-stock.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { PaginationResult } from '@common/interfaces/pagination-result.interface';
 import { ProductCatalog } from './entities/product-catalog.entity';
@@ -14,8 +14,8 @@ import { User } from '../users/entities/user.entity';
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    @InjectRepository(ProductStock)
+    private productsRepository: Repository<ProductStock>,
     @InjectRepository(ProductCatalog)
     private productCatalogRepository: Repository<ProductCatalog>,
     @InjectRepository(MicroBatch)
@@ -26,7 +26,7 @@ export class ProductsService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(createProductDto: CreateProductDto, currentUser: User): Promise<Product> {
+  async create(createProductDto: CreateProductDto, currentUser: User): Promise<ProductStock> {
     const { productCatalogId, microbatchId, expenses, ...productData } = createProductDto;
 
     const productCatalog = await this.productCatalogRepository.findOneBy({
@@ -65,13 +65,12 @@ export class ProductsService {
 
     const existingProducts = await this.productsRepository.find({
       where: { microbatch: { id: microbatchId } },
-      relations: ['product_catalog'],
     });
     const totalWeightUsed = existingProducts.reduce((sum, product) => {
-      return sum + (product.stock_current * (product.product_catalog.weight_grams / 1000));
+      return sum + (product.stock_current * (product.weight_grams / 1000));
     }, 0);
 
-    const newProductWeight = createProductDto.stock_current * (productCatalog.weight_grams / 1000);
+    const newProductWeight = createProductDto.stock_current * (createProductDto.weight_grams / 1000);
 
     if (totalWeightUsed + newProductWeight > Number(microBatch.roasted_kg_obtained)) {
       throw new BadRequestException('The amount of product stock exceeds the roasted coffee available in the micro-batch.');
@@ -95,7 +94,7 @@ export class ProductsService {
     const totalMicroBatchCost = proratedBatchCost + directMicroBatchExpenses;
     const unitsProduced =
       Number(microBatch.roasted_kg_obtained) /
-      (productCatalog.weight_grams / 1000);
+      (createProductDto.weight_grams / 1000);
       
     const unitCost = unitsProduced > 0 ? totalMicroBatchCost / unitsProduced : 0;
 
@@ -111,7 +110,7 @@ export class ProductsService {
 
   async findAll(
     filterDto: FilterProductDto,
-  ): Promise<PaginationResult<Product>> {
+  ): Promise<PaginationResult<ProductStock>> {
     const {
       page = 1,
       limit = 10,
@@ -119,6 +118,8 @@ export class ProductsService {
       grind_type,
       active,
       isLowStock,
+      catalogId,
+      productCatalogId,
       productCatalogCode,
       productCatalogName,
     } = filterDto;
@@ -140,6 +141,13 @@ export class ProductsService {
     if (isLowStock) {
       queryBuilder.andWhere('product.stock_current <= product.stock_minimum');
     }
+    
+    // Catalog filters
+    const finalCatalogId = catalogId || productCatalogId;
+    if (finalCatalogId) {
+      queryBuilder.andWhere('productCatalog.id = :catalogId', { catalogId: finalCatalogId });
+    }
+    
     if (productCatalogCode) {
       queryBuilder.andWhere('productCatalog.code ILIKE :productCatalogCode', {
         productCatalogCode: `%${productCatalogCode}%`,
@@ -159,23 +167,22 @@ export class ProductsService {
     return { data, total, page, limit };
   }
 
-  async findOne(id: string): Promise<Product> {
+  async findOne(id: string): Promise<ProductStock> {
     const product = await this.productsRepository.findOne({
       where: { id },
       relations: ['product_catalog', 'microbatch'],
     });
     if (!product) {
-      throw new NotFoundException(`Product with ID "${id}" not found`);
+      throw new NotFoundException(`ProductStock with ID "${id}" not found`);
     }
     return product;
   }
 
-  // ...
   async update(
     id: string,
-    updateProductDto: UpdateProductDto,
-  ): Promise<Product> {
-    const { sale_price, active, productCatalogName, stock_minimum } = updateProductDto;
+    updateProductDto: UpdateProductStockDto,
+  ): Promise<ProductStock> {
+    const { sale_price, active, productCatalogName, stock_minimum, weight_grams, package_type } = updateProductDto;
     const product = await this.findOne(id);
 
     // Update ProductCatalog name if provided
@@ -183,18 +190,20 @@ export class ProductsService {
       const productCatalog = product.product_catalog;
       if (!productCatalog) {
         throw new NotFoundException(
-          `ProductCatalog for Product with ID "${id}" not found`,
+          `ProductCatalog for ProductStock with ID "${id}" not found`,
         );
       }
       productCatalog.name = productCatalogName;
       await this.productCatalogRepository.save(productCatalog);
     }
 
-    // Update Product fields
+    // Update ProductStock fields
     await this.productsRepository.update(id, {
       sale_price,
       active,
       stock_minimum,
+      weight_grams,
+      package_type,
     });
 
     return this.findOne(id);
@@ -203,11 +212,11 @@ export class ProductsService {
   async remove(id: string): Promise<void> {
     const deleteResult = await this.productsRepository.softDelete(id);
     if (deleteResult.affected === 0) {
-      throw new NotFoundException(`Product with ID "${id}" not found`);
+      throw new NotFoundException(`ProductStock with ID "${id}" not found`);
     }
   }
 
-  async checkLowStock(): Promise<Product[]> {
+  async checkLowStock(): Promise<ProductStock[]> {
     return this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.product_catalog', 'productCatalog')

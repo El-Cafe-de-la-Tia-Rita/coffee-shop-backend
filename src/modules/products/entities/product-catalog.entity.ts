@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { Product } from './product.entity';
+import { ProductStock } from './product-stock.entity';
 
 @Entity('product_catalog')
 export class ProductCatalog {
@@ -23,13 +23,7 @@ export class ProductCatalog {
   @Column({ type: 'text' })
   description: string;
 
-  @Column()
-  weight_grams: number;
-
-  @Column()
-  package_type: string;
-
-  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 }) // Added base_price
+  @Column({ type: 'decimal', precision: 12, scale: 2, default: 0 })
   base_price: number;
 
   @Column({ default: true })
@@ -45,6 +39,6 @@ export class ProductCatalog {
   deleted_at: Date;
 
   /** Relations */
-  @OneToMany(() => Product, (p) => p.product_catalog)
-  product_stock: Product[];
+  @OneToMany(() => ProductStock, (p) => p.product_catalog)
+  product_stock: ProductStock[];
 }

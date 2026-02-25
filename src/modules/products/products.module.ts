@@ -5,13 +5,13 @@ import { ProductsController } from './products.controller';
 import { ProductCatalog } from './entities/product-catalog.entity';
 import { ProductCatalogService } from './product-catalog.service';
 import { ProductCatalogController } from './product-catalog.controller';
-import { Product } from './entities/product.entity';
+import { ProductStock } from './entities/product-stock.entity';
 import { MicroBatch } from '../micro-batches/entities/micro-batch.entity';
 import { Expense } from '../expenses/entities/expense.entity';
 import { User } from '../users/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductCatalog, Product, MicroBatch, Expense, User])],
+  imports: [TypeOrmModule.forFeature([ProductCatalog, ProductStock, MicroBatch, Expense, User])],
   controllers: [ProductsController, ProductCatalogController],
   providers: [ProductsService, ProductCatalogService],
 })

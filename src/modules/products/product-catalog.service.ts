@@ -20,13 +20,12 @@ export class ProductCatalogService {
   }
 
   async findAll(filterDto: FilterProductCatalogDto): Promise<PaginationResult<ProductCatalog>> {
-    const { page = 1, limit = 10, code, name, package_type, active } = filterDto;
+    const { page = 1, limit = 10, code, name, active } = filterDto;
     const skip = (page - 1) * limit;
 
     const where: any = {};
     if (code) where.code = ILike(`%${code}%`);
     if (name) where.name = ILike(`%${name}%`);
-    if (package_type) where.package_type = ILike(`%${package_type}%`);
     if (typeof active === 'boolean') where.active = active;
 
     const [data, total] = await this.productCatalogRepository.findAndCount({

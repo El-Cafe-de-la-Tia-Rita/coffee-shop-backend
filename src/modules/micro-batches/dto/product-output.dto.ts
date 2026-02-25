@@ -17,4 +17,14 @@ export class ProductOutputDto {
   @IsEnum(GrindType)
   @IsNotEmpty()
   grindType: GrindType;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  weight_grams: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  package_type: string;
 }
