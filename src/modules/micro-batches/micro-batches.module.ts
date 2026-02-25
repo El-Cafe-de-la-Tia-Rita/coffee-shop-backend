@@ -6,12 +6,12 @@ import { MicroBatch } from './entities/micro-batch.entity';
 import { Batch } from '../batches/entities/batch.entity';
 import { Expense } from '../expenses/entities/expense.entity';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { ProductCatalog } from '../products/entities/product-catalog.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MicroBatch, Batch, Expense, InventoryMovement, Product, ProductCatalog]),
+    TypeOrmModule.forFeature([MicroBatch, Batch, Expense, InventoryMovement, ProductStock, ProductCatalog]),
   ],
   controllers: [MicroBatchesController],
   providers: [MicroBatchesService],

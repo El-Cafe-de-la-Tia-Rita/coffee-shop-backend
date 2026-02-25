@@ -5,12 +5,12 @@ import { DashboardController } from './dashboard.controller';
 import { Order } from '../orders/entities/order.entity';
 import { OrderItem } from '../orders/entities/order-item.entity';
 import { Expense } from '../expenses/entities/expense.entity';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { Client } from '../clients/entities/client.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderItem, Expense, Product, Client]),
+    TypeOrmModule.forFeature([Order, OrderItem, Expense, ProductStock, Client]),
   ],
   controllers: [DashboardController],
   providers: [DashboardService],

@@ -3,7 +3,7 @@ import { GrindType } from '@common/enums/grind-type.enum';
 import { ResponseMicroBatchDto } from '@modules/micro-batches/dto/response-micro-batch.dto';
 import { ResponseProductCatalogDto } from './response-product-catalog.dto';
 
-export class ResponseProductDto {
+export class ResponseProductStockDto {
   @ApiProperty()
   id: string;
 
@@ -18,6 +18,12 @@ export class ResponseProductDto {
 
   @ApiProperty({ enum: GrindType })
   grind_type: GrindType;
+
+  @ApiProperty()
+  weight_grams: number;
+
+  @ApiProperty()
+  package_type: string;
 
   @ApiProperty()
   stock_current: number;

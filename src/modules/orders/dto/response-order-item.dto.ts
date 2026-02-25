@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResponseProductDto } from '@modules/products/dto/response-product.dto';
+import { ResponseProductStockDto } from '@modules/products/dto/response-product.dto';
 
 export class ResponseOrderItemDto {
   @ApiProperty()
   id: string;
 
-  @ApiProperty({ type: () => ResponseProductDto })
-  product_stock: ResponseProductDto;
+  @ApiProperty({ type: () => ResponseProductStockDto })
+  product_stock: ResponseProductStockDto;
 
   @ApiProperty()
   quantity: number;

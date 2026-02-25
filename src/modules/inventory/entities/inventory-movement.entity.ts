@@ -7,7 +7,7 @@ import {
   UpdateDateColumn, // Add UpdateDateColumn for deleted_at
   DeleteDateColumn,
 } from 'typeorm';
-import { Product } from '../../products/entities/product.entity';
+import { ProductStock } from '../../products/entities/product-stock.entity';
 import { Batch } from '../../batches/entities/batch.entity';
 import { User } from '../../users/entities/user.entity';
 import { MovementType } from '@common/enums/movement-type.enum';
@@ -18,8 +18,8 @@ export class InventoryMovement {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Product, (p) => p.inventory_movements, { nullable: true })
-  product_stock: Product;
+  @ManyToOne(() => ProductStock, (p) => p.inventory_movements, { nullable: true })
+  product_stock: ProductStock;
 
   @ManyToOne(() => Batch, (l) => l.inventory_movements, { nullable: true })
   batch: Batch;

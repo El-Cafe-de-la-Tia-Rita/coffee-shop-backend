@@ -6,7 +6,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Client } from '../clients/entities/client.entity';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { User } from '../users/entities/user.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
@@ -25,8 +25,8 @@ export class OrdersService {
     private orderItemsRepository: Repository<OrderItem>,
     @InjectRepository(Client)
     private clientsRepository: Repository<Client>,
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    @InjectRepository(ProductStock)
+    private productsRepository: Repository<ProductStock>,
     @InjectRepository(InventoryMovement)
     private inventoryMovementsRepository: Repository<InventoryMovement>,
     @InjectRepository(User)
@@ -67,7 +67,7 @@ export class OrdersService {
       const orderRepository = manager.getRepository(Order);
       const orderItemRepository = manager.getRepository(OrderItem);
       const clientRepository = manager.getRepository(Client);
-      const productRepository = manager.getRepository(Product);
+      const productRepository = manager.getRepository(ProductStock);
       const inventoryMovementRepository = manager.getRepository(InventoryMovement);
 
       // 1. Handle Client (find existing or create new)
@@ -133,12 +133,12 @@ export class OrdersService {
       // 2. Validate Stock and Calculate Totals
       let subtotal = 0;
       const createdOrderItems: OrderItem[] = [];
-      const productUpdates: Product[] = [];
+      const productUpdates: ProductStock[] = [];
 
       for (const itemDto of orderItems) {
         const product = await productRepository.findOne({ where: { id: itemDto.productId }, relations: ['product_catalog'] });
         if (!product) {
-          throw new NotFoundException(`Product with ID "${itemDto.productId}" not found.`);
+          throw new NotFoundException(`ProductStock with ID "${itemDto.productId}" not found.`);
         }
         if (product.stock_current < itemDto.quantity) {
           throw new BadRequestException(`Not enough stock for product "${product.sku}". Available: ${product.stock_current}, Requested: ${itemDto.quantity}`);
@@ -155,7 +155,7 @@ export class OrdersService {
           quantity: itemDto.quantity,
           unit_price: product.sale_price,
           subtotal: itemSubtotal,
-          sold_kg: (product.product_catalog.weight_grams / 1000) * itemDto.quantity,
+          sold_kg: (product.weight_grams / 1000) * itemDto.quantity,
         });
         createdOrderItems.push(orderItem);
 
@@ -205,7 +205,7 @@ export class OrdersService {
           movement_type: MovementType.OUTBOUND,
           product_stock: orderItem.product_stock,
           user: currentUser,
-          unit: orderItem.product_stock.product_catalog.package_type,
+          unit: orderItem.product_stock.package_type,
           movement_date: new Date(),
           reason: InventoryMovementReason.SALE,
           reference: savedOrder.order_number,
@@ -358,7 +358,7 @@ export class OrdersService {
 
     return this.dataSource.transaction(async (manager) => {
       const orderRepository = manager.getRepository(Order);
-      const productRepository = manager.getRepository(Product);
+      const productRepository = manager.getRepository(ProductStock);
       const inventoryMovementRepository = manager.getRepository(InventoryMovement);
 
       order.status = OrderStatus.CANCELLED;
@@ -378,7 +378,7 @@ export class OrdersService {
             movement_type: MovementType.INBOUND,
             product_stock: product,
             user: currentUser,
-            unit: item.product_stock.product_catalog.package_type,
+            unit: item.product_stock.package_type,
             movement_date: new Date(),
             reason: InventoryMovementReason.RETURN,
             reference: cancelledOrder.order_number,

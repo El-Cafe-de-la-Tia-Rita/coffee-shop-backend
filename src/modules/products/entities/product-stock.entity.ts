@@ -16,7 +16,7 @@ import { InventoryMovement } from '../../inventory/entities/inventory-movement.e
 import { GrindType } from '@common/enums/grind-type.enum';
 
 @Entity('product_stock')
-export class Product {
+export class ProductStock {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,6 +31,12 @@ export class Product {
 
   @Column({ type: 'enum', enum: GrindType })
   grind_type: GrindType;
+
+  @Column()
+  weight_grams: number;
+
+  @Column()
+  package_type: string;
 
   @Column()
   stock_current: number;

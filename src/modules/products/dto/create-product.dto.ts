@@ -28,6 +28,16 @@ export class CreateProductDto {
   @ApiProperty()
   @IsNumber()
   @Min(0)
+  weight_grams: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  package_type: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
   stock_current: number;
 
   @ApiProperty()
@@ -63,5 +73,3 @@ export class CreateProductDto {
   @IsOptional()
   active?: boolean;
 }
-
-

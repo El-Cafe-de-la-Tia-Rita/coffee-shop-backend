@@ -7,7 +7,7 @@ import { MicroBatch } from './entities/micro-batch.entity';
 import { Batch } from '../batches/entities/batch.entity';
 import { Expense } from '../expenses/entities/expense.entity';
 import { InventoryMovement } from '../inventory/entities/inventory-movement.entity';
-import { Product } from '../products/entities/product.entity';
+import { ProductStock } from '../products/entities/product-stock.entity';
 import { ProductCatalog } from '../products/entities/product-catalog.entity';
 import { User } from '@modules/users/entities/user.entity';
 import { ExpenseCategory } from '@common/enums/expense-category.enum';
@@ -28,8 +28,8 @@ export class MicroBatchesService {
     private expensesRepository: Repository<Expense>,
     @InjectRepository(InventoryMovement)
     private inventoryMovementsRepository: Repository<InventoryMovement>,
-    @InjectRepository(Product)
-    private productsRepository: Repository<Product>,
+    @InjectRepository(ProductStock)
+    private productsRepository: Repository<ProductStock>,
     @InjectRepository(ProductCatalog)
     private productCatalogRepository: Repository<ProductCatalog>,
   ) {}
@@ -55,7 +55,7 @@ export class MicroBatchesService {
     }
 
     let total_weight_of_products = 0;
-    const productsToCreate: Product[] = [];
+    const productsToCreate: ProductStock[] = [];
     const inventoryMovementsToCreate: InventoryMovement[] = [];
 
     // Temporary storage for product catalogs to avoid re-fetching
@@ -72,11 +72,13 @@ export class MicroBatchesService {
         productCatalogsMap.set(output.productCatalogId, productCatalog);
       }
 
-      total_weight_of_products += (productCatalog.weight_grams / 1000) * output.count;
+      total_weight_of_products += (output.weight_grams / 1000) * output.count;
 
       const newProduct = this.productsRepository.create({
         product_catalog: productCatalog,
         grind_type: output.grindType,
+        weight_grams: output.weight_grams,
+        package_type: output.package_type,
         stock_current: output.count,
         stock_reserved: 0,
         stock_minimum: 0,
@@ -91,7 +93,7 @@ export class MicroBatchesService {
         movement_type: MovementType.INBOUND,
         product_stock: newProduct,
         user: currentUser,
-        unit: productCatalog.package_type,
+        unit: output.package_type,
         movement_date: new Date(),
         reason: InventoryMovementReason.MICROBATCH_PRODUCTION,
       });
@@ -169,14 +171,9 @@ export class MicroBatchesService {
     const totalMicroBatchCost = proratedBatchCost + directMicroBatchExpenses;
     
     for (const product of productsToCreate) {
-      const productCatalog = productCatalogsMap.get(product.product_catalog.id);
-      if (!productCatalog) {
-        // This case should ideally not happen if productCatalogsMap is correctly populated
-        throw new NotFoundException(`ProductCatalog with ID "${product.product_catalog.id}" not found in map.`);
-      }
       const unitsProduced =
         Number(microBatchWithRelations.roasted_kg_obtained) /
-        (productCatalog.weight_grams / 1000); // Total units from this microbatch
+        (product.weight_grams / 1000); // Total units from this microbatch
       
       const unitCost = unitsProduced > 0 ? totalMicroBatchCost / unitsProduced : 0;
       product.unit_cost = unitCost;

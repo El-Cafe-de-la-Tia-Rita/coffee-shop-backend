@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsBoolean, IsEnum, IsInt, Min, Max } from 'class-validator';
+import { IsOptional, IsString, IsBoolean, IsEnum, IsInt, Min, Max, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { GrindType } from '@common/enums/grind-type.enum';
@@ -42,6 +42,16 @@ export class FilterProductDto {
   isLowStock?: boolean;
 
   // Filters from ProductCatalog
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  catalogId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  productCatalogId?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
